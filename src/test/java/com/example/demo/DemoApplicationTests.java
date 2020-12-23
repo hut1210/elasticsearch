@@ -180,7 +180,6 @@ class DemoApplicationTests {
 
     @Test
     public void testAggs3() throws IOException {
-
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices("student_index");
         //指定分组字段,terms指定别名,field指定字段名
