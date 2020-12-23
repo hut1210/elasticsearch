@@ -205,6 +205,11 @@ class DemoApplicationTests {
     }
 
     @Test
+    public void testAggs4() throws IOException {
+
+    }
+
+    @Test
     public void testSuggestCompletionProc() {
         String suggestField="name";//指定在哪个字段搜索
         String suggestValue="王二";//输入的信息
