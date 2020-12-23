@@ -206,7 +206,6 @@ class DemoApplicationTests {
 
     @Test
     public void testSuggestCompletionProc() {
-
         String suggestField="name";//指定在哪个字段搜索
         String suggestValue="王二";//输入的信息
         Integer suggestMaxCount=10;//获得最大suggest条数
