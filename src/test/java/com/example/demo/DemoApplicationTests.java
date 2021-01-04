@@ -1,12 +1,11 @@
 package com.example.demo;
 
+import com.example.demo.condition.StudentCondition;
+import com.example.demo.condition.TermsAggregationCondition;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.domain.Student;
-import jdk.nashorn.internal.ir.CallNode;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -16,7 +15,6 @@ import org.elasticsearch.search.aggregations.*;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Avg;
-import org.elasticsearch.search.aggregations.metrics.ParsedAvg;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
@@ -27,9 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 
 import javax.annotation.Resource;
@@ -135,8 +130,7 @@ class DemoApplicationTests {
         //指定分组字段,terms指定别名,field指定字段名
         TermsAggregationBuilder aggregation = AggregationBuilders.terms("group_age")
                 //聚合字段名
-                .field("age")
-                ;
+                .field("age").order(InternalOrder.CompoundOrder.key(false));
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(aggregation);
         //执行查询
@@ -144,8 +138,10 @@ class DemoApplicationTests {
         System.out.println(searchSourceBuilder);
         System.out.println(searchRequest);
         SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-        System.out.println(response);
+        System.out.println("response==>"+response);
         Terms byAgeAggregation = response.getAggregations().get("group_age");
+        Map<String, Aggregation> asMap = response.getAggregations().getAsMap();
+        System.out.println("--------------------------------");
         List<? extends Terms.Bucket> buckets = byAgeAggregation.getBuckets();
         for (Terms.Bucket buck: buckets) {
             System.out.println(buck.getKeyAsString()+"    "+buck.getDocCount());
@@ -206,7 +202,24 @@ class DemoApplicationTests {
 
     @Test
     public void testAggs4() throws IOException {
+        StudentCondition condition = new StudentCondition();
+        //condition.setName("王皮皮");
 
+        TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
+        condition1.order("_key",false);
+
+        condition1.avg("avgAge","age");
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1);
+        System.out.println("ssb --->"+ssb);
+        SearchRequest searchRequest = new SearchRequest("student_index");
+        searchRequest.source(ssb);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println("searchResponse --->"+searchResponse);
+        } catch (Exception e) {
+            throw new RuntimeException("查询异常", e);
+        }
     }
 
     @Test

@@ -1,0 +1,29 @@
+package com.example.demo.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * @author huteng5
+ * @version 1.0
+ * @date 2021/1/4 15:10
+ */
+@Target({ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ScriptParams {
+    String key();
+
+    String value();
+
+    ScriptParams.Type type() default ScriptParams.Type.STRING;
+
+    public static enum Type {
+        STRING,
+        INTEGER;
+
+        private Type() {
+        }
+    }
+}
