@@ -50,7 +50,7 @@ public class WarnEventListener {
                     log.info("准备发送消息给订阅者..." + Thread.currentThread().getName() + "," + item);
                     if (item.getWarnRulesId() == warnRules.getId()) {
                         //发送信息给订阅人
-                        log.info("发送信息给订阅人--->{}---->{}", Thread.currentThread().getName(), item);
+                        log.info("发送信息给订阅人--->{}---->{}--->{}", Thread.currentThread().getName(), item,warnRules);
                     }
                 }
             });
