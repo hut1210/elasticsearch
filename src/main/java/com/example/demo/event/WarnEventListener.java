@@ -28,28 +28,29 @@ public class WarnEventListener {
     @Resource(name = "multipleMessageServicePool")
     private Executor executor;
 
-    @Async("multiplePool")
+    @Async("multipleMessageServicePool")
     @EventListener
     public void onContractEvent(WarnEvent event) {
         WarnRules warnRules = event.getWarnRules();
         logger.info("接到预警触发--->{}，发送消息data={}", Thread.currentThread().getName(), event.getWarnRules());
-
         //查找订阅此预警规则的有效的列表
         List<WarnSubscribe> warnSubscribeList = new ArrayList<>();
-        WarnSubscribe warnSubscribe = new WarnSubscribe();
-        warnSubscribe.setId(1L);
-        warnSubscribe.setMail("test@163.com");
-        warnSubscribe.setPhone("1356333223");
-        warnSubscribe.setWarnRulesId(1L);
-        warnSubscribeList.add(warnSubscribe);
+        for (int i = 1; i < 2; i++) {
+            WarnSubscribe warnSubscribe = new WarnSubscribe();
+            warnSubscribe.setId(Long.valueOf(""+i));
+            warnSubscribe.setMail("test"+i+"@163.com");
+            warnSubscribe.setPhone("135633322"+i);
+            warnSubscribe.setWarnRulesId(Long.valueOf(""+i));
+            warnSubscribeList.add(warnSubscribe);
+        }
         warnSubscribeList.forEach(item -> {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    log.info("准备发送消息给订阅者..." + Thread.currentThread().getName()+","+item);
-                    if(item.getWarnRulesId()==warnRules.getId()){
+                    log.info("准备发送消息给订阅者..." + Thread.currentThread().getName() + "," + item);
+                    if (item.getWarnRulesId() == warnRules.getId()) {
                         //发送信息给订阅人
-                        log.info("发送信息给订阅人--->{}---->{}",Thread.currentThread().getName(),item);
+                        log.info("发送信息给订阅人--->{}---->{}", Thread.currentThread().getName(), item);
                     }
                 }
             });

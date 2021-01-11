@@ -1,6 +1,7 @@
 package com.example.demo.strategy.Impl;
 
 import com.example.demo.domain.WarnRules;
+import com.example.demo.enums.WarnTargetEnum;
 import com.example.demo.event.WarnEvent;
 import com.example.demo.strategy.AbstractWarnTrigger;
 import com.example.demo.strategy.IWarnTrigger;
@@ -23,7 +24,7 @@ public class LogisticsWarnService extends AbstractWarnTrigger implements Initial
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        WarnTriggerFactory.registerService(3,this);
+        WarnTriggerFactory.registerService(WarnTargetEnum.LOGISTICS_TARGET.getCode(),this);
     }
 
     @Override

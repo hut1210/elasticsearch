@@ -30,9 +30,6 @@ public class WarnTask {
     @Resource(name = "multiplePool")
     private Executor executor;
 
-    @Resource
-    private ApplicationEventPublisher publisher;
-
     @Async("multiplePool")
     //@Scheduled(cron = "0/10 * * * * ?")
     @Scheduled(cron = "${scheduled.cron.style}")
@@ -40,7 +37,7 @@ public class WarnTask {
         log.info("预警定时任务执行中......" + Thread.currentThread().getName());
         //获取预警规则为有效的列表
         List<WarnRules> warnRulesList = new ArrayList<>();
-        WarnRules warnRules = new WarnRules();
+        /*WarnRules warnRules = new WarnRules();
         warnRules.setId(1L);
         warnRules.setWarnName("test1");
         warnRules.setWarnTarget(1);
@@ -56,7 +53,14 @@ public class WarnTask {
         warnRules2.setId(3L);
         warnRules2.setWarnName("test3");
         warnRules2.setWarnTarget(3);
-        warnRulesList.add(warnRules2);
+        warnRulesList.add(warnRules2);*/
+        for (int i = 1; i < 4; i++) {
+            WarnRules warnRules = new WarnRules();
+            warnRules.setId(Long.valueOf(""+i));
+            warnRules.setWarnName("test"+i);
+            warnRules.setWarnTarget(i);
+            warnRulesList.add(warnRules);
+        }
 
         warnRulesList.forEach(item -> {
             executor.execute(new Runnable() {
@@ -64,7 +68,7 @@ public class WarnTask {
                 public void run() {
                     try {
                         IWarnTrigger warnTrigger = WarnTriggerFactory.getWarnTriggerByTarget(item.getWarnTarget());
-                        log.info(item.getWarnTarget()+"  "+item.getWarnName());
+                        log.info(item.getWarnTarget() + "  " + item.getWarnName());
                         if (warnTrigger != null) {
                             warnTrigger.triggerRule(item);
                             /*Thread.sleep(500);
