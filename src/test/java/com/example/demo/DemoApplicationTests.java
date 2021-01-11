@@ -16,6 +16,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Avg;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
@@ -156,7 +157,9 @@ class DemoApplicationTests {
         //指定分组字段,terms指定别名,field指定字段名
         TermsAggregationBuilder aggregation = AggregationBuilders.terms("group_age")
                 //聚合字段名
-                .field("age").subAggregation(AggregationBuilders.avg("avg_age").field("age"));
+                .field("age")
+                .subAggregation(AggregationBuilders.avg("avg_age").field("age"))
+                .order(InternalOrder.CompoundOrder.count(false));
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(aggregation);
         //执行查询
@@ -182,8 +185,10 @@ class DemoApplicationTests {
         //指定分组字段,terms指定别名,field指定字段名
         TermsAggregationBuilder aggregation = AggregationBuilders.terms("group_name")
                 //聚合字段名
-                .field("name").subAggregation(AggregationBuilders.avg("avg_age").field("age"));
+                .field("name")
+                .subAggregation(AggregationBuilders.avg("avg_age").field("age"));
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.sort("age", SortOrder.DESC);
         searchSourceBuilder.aggregation(aggregation);
         //执行查询
         searchRequest.source(searchSourceBuilder);
@@ -203,13 +208,33 @@ class DemoApplicationTests {
     @Test
     public void testAggs4() throws IOException {
         StudentCondition condition = new StudentCondition();
-        //condition.setName("王皮皮");
+        condition.setName("王皮皮");
+
+        QueryBuilders.termQuery("name","王皮皮");
 
         TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
         condition1.order("_key",false);
 
         condition1.avg("avgAge","age");
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1);
+        System.out.println("ssb --->"+ssb);
+        SearchRequest searchRequest = new SearchRequest("student_index");
+        searchRequest.source(ssb);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println("searchResponse --->"+searchResponse);
+        } catch (Exception e) {
+            throw new RuntimeException("查询异常", e);
+        }
+    }
+
+    @Test
+    public void testAggs5() throws IOException {
+        StudentCondition condition = new StudentCondition();
+        condition.setName("王皮皮");
+
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.build(condition);
         System.out.println("ssb --->"+ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);

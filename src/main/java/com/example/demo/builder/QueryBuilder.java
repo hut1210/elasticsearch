@@ -31,7 +31,7 @@ import java.util.*;
 @Slf4j
 public class QueryBuilder {
 
-    private static final String annotationPackage = "com.jd.soms.core.api.es.annotation";
+    private static final String annotationPackage = "com.example.demo.annotation";
 
 
     public static String buildString(Object object) {

@@ -16,7 +16,7 @@ import java.time.LocalDate;
  * @version 1.0
  * @date 2020/12/30 20:19
  */
-@Component
+/*@Component
 @Slf4j
 public class TaskJob extends QuartzJobBean {
 
@@ -24,4 +24,4 @@ public class TaskJob extends QuartzJobBean {
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info("定时执行任务中...{}---{},{}---{}",Thread.currentThread().getName(),System.currentTimeMillis(), LocalDateTime.now(),Runtime.getRuntime().availableProcessors());
     }
-}
+}*/
