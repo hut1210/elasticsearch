@@ -32,7 +32,7 @@ public class WarnEventListener {
     @EventListener
     public void onContractEvent(WarnEvent event) {
         WarnRules warnRules = event.getWarnRules();
-        logger.info("接到预警触发data={}，发送消息......{}", event.getWarnRules(), Thread.currentThread().getName());
+        logger.info("接到预警触发--->{}，发送消息data={}", Thread.currentThread().getName(), event.getWarnRules());
 
         //查找订阅此预警规则的有效的列表
         List<WarnSubscribe> warnSubscribeList = new ArrayList<>();
@@ -49,7 +49,7 @@ public class WarnEventListener {
                     log.info("准备发送消息给订阅者..." + Thread.currentThread().getName()+","+item);
                     if(item.getWarnRulesId()==warnRules.getId()){
                         //发送信息给订阅人
-                        log.info("发送信息给订阅人{}",item);
+                        log.info("发送信息给订阅人--->{}---->{}",Thread.currentThread().getName(),item);
                     }
                 }
             });

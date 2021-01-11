@@ -1,6 +1,10 @@
 package com.example.demo.strategy;
 
 import com.example.demo.domain.WarnRules;
+import com.example.demo.event.WarnEvent;
+import org.springframework.context.ApplicationEventPublisher;
+
+import javax.annotation.Resource;
 
 /**
  * @author huteng5
@@ -9,8 +13,14 @@ import com.example.demo.domain.WarnRules;
  */
 public abstract class AbstractWarnTrigger implements IWarnTrigger{
 
+    @Resource
+    private ApplicationEventPublisher publisher;
+
     /**
-     * 触发规则
+     * 发布消息
+     * @param event
      */
-    public abstract void triggerRule(WarnRules warnRules);
+    public void publishEvent(WarnEvent event){
+        publisher.publishEvent(event);
+    }
 }

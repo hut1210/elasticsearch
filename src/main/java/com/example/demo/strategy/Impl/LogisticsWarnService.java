@@ -2,6 +2,7 @@ package com.example.demo.strategy.Impl;
 
 import com.example.demo.domain.WarnRules;
 import com.example.demo.event.WarnEvent;
+import com.example.demo.strategy.AbstractWarnTrigger;
 import com.example.demo.strategy.IWarnTrigger;
 import com.example.demo.strategy.WarnTriggerFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,7 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
-public class LogisticsWarnService implements InitializingBean, IWarnTrigger {
-
-    @Resource
-    private ApplicationEventPublisher publisher;
+public class LogisticsWarnService extends AbstractWarnTrigger implements InitializingBean, IWarnTrigger {
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -30,12 +28,12 @@ public class LogisticsWarnService implements InitializingBean, IWarnTrigger {
 
     @Override
     public void triggerRule(WarnRules warnRules) {
-        log.info("物流LogisticsWarnService触发预警规则处理方法......{},------{}",warnRules.getWarnName(),Thread.currentThread().getName());
+        log.info("物流LogisticsWarnService触发预警规则处理方法...{},---{}",Thread.currentThread().getName(),warnRules.getWarnName());
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        publisher.publishEvent(new WarnEvent(this, warnRules));
+        publishEvent(new WarnEvent(this, warnRules));
     }
 }
