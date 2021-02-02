@@ -1,9 +1,14 @@
 package com.example.demo;
 
+import com.example.demo.builder.helper.AggregationHelper;
 import com.example.demo.condition.StudentCondition;
 import com.example.demo.condition.TermsAggregationCondition;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.domain.Student;
+import com.example.demo.dto.OwnerAndWarehouseDto;
+import net.minidev.json.JSONUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -12,9 +17,12 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.*;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Avg;
+import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
@@ -242,6 +250,121 @@ class DemoApplicationTests {
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             System.out.println("searchResponse --->"+searchResponse);
+        } catch (Exception e) {
+            throw new RuntimeException("查询异常", e);
+        }
+    }
+
+    @Test
+    public void testAggs6() throws IOException {
+        StudentCondition condition = new StudentCondition();
+        condition.setName("王皮皮");
+
+        QueryBuilders.termQuery("name","王皮皮");
+
+        TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
+        condition1.order("_key",false);
+
+        condition1.avg("avgAge","age");
+
+        TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
+
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(),condition1,condition2);
+        System.out.println("ssb --->"+ssb);
+        SearchRequest searchRequest = new SearchRequest("student_index");
+        searchRequest.source(ssb);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println("searchResponse --->"+searchResponse);
+            Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
+            if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+                ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+                if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                    for (Terms.Bucket bucket : teams.getBuckets()) {
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                        if (StringUtils.isNotBlank(key)) {
+                            System.out.println("key-----"+key);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("查询异常", e);
+        }
+    }
+
+    @Test
+    public void testAggs7() throws IOException {
+        StudentCondition condition = new StudentCondition();
+        condition.setName("王皮皮");
+
+        QueryBuilders.termQuery("name","王皮皮");
+
+        TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
+
+        TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
+
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(),condition1,condition2);
+        System.out.println("ssb --->"+ssb);
+        SearchRequest searchRequest = new SearchRequest("student_index");
+        searchRequest.source(ssb);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println("searchResponse --->"+searchResponse);
+            SearchHit[] hits = searchResponse.getHits().getHits();
+
+            List<OwnerAndWarehouseDto> list = new ArrayList<>();
+
+            Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
+            if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+                ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+                if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                    teams.getBuckets().forEach(bucket->{
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                        if (StringUtils.isNotBlank(key)) {
+                            System.out.println("key-----"+key);
+                        }
+                        Map<String, Aggregation> asMap = bucket.getAggregations().getAsMap();
+                        if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+                            ParsedLongTerms aggregation = (ParsedLongTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
+                            if(CollectionUtils.isNotEmpty(aggregation.getBuckets())){
+                                aggregation.getBuckets().forEach(bucket1->{
+                                    String key1 = bucket1.getKey() == null ? "" : bucket1.getKey().toString() ;
+                                    if (StringUtils.isNotBlank(key1)) {
+                                        System.out.println("key1-----"+key1);
+                                        //组装编号和名称，返回
+                                        OwnerAndWarehouseDto ownerAndWarehouseDto = new OwnerAndWarehouseDto();
+                                        ownerAndWarehouseDto.setNo(key);
+                                        ownerAndWarehouseDto.setName(key1);
+                                        list.add(ownerAndWarehouseDto);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    /*for (Terms.Bucket bucket : teams.getBuckets()) {
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                        if (StringUtils.isNotBlank(key)) {
+                            System.out.println("key-----"+key);
+                        }
+                        Map<String, Aggregation> asMap = bucket.getAggregations().getAsMap();
+                        if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+                            ParsedLongTerms aggregation = (ParsedLongTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
+                            if(CollectionUtils.isNotEmpty(aggregation.getBuckets())){
+                                for (Terms.Bucket bucket1 : aggregation.getBuckets()){
+                                    String key1 = bucket1.getKey() == null ? "" : bucket1.getKey().toString() ;
+                                    if (StringUtils.isNotBlank(key1)) {
+                                        System.out.println("key1-----"+key1);
+                                    }
+                                }
+                            }
+                        }
+                    }*/
+                }
+            }
+            list.forEach(System.out::println);
         } catch (Exception e) {
             throw new RuntimeException("查询异常", e);
         }

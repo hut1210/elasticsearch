@@ -12,8 +12,8 @@ public enum WarnTargetEnum {
     LOGISTICS_TARGET(3,"logistics"),
     ;
 
-    private final Integer code;
-    private final String name;
+    private  Integer code;
+    private  String name;
 
     WarnTargetEnum(Integer code, String name) {
         this.code = code;
@@ -26,5 +26,13 @@ public enum WarnTargetEnum {
 
     public String getName() {
         return name;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

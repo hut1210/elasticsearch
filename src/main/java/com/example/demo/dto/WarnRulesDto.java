@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author huteng5
@@ -95,4 +96,6 @@ public class WarnRulesDto implements Serializable {
      * 删除标志(0有效 1无效)
      */
     private int isDelete;
+
+    private List<OptionExtendDto> optionExtendDtoList;
 }
