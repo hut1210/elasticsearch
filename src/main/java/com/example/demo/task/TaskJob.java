@@ -36,7 +36,7 @@ public class TaskJob extends QuartzJobBean {
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        log.info("定时执行任务中...{}---{},{}---{}",Thread.currentThread().getName(),System.currentTimeMillis(), LocalDateTime.now(),Runtime.getRuntime().availableProcessors());
+        /*log.info("定时执行任务中...{}---{},{}---{}",Thread.currentThread().getName(),System.currentTimeMillis(), LocalDateTime.now(),Runtime.getRuntime().availableProcessors());
         log.info("预警定时任务执行中......" + Thread.currentThread().getName());
         //获取预警规则为有效的列表
         List<WarnRules> warnRulesList = new ArrayList<>();
@@ -57,9 +57,9 @@ public class TaskJob extends QuartzJobBean {
                         log.info(item.getWarnTarget() + "  " + item.getWarnName());
                         if (warnTrigger != null) {
                             warnTrigger.triggerRule(item);
-                            /*Thread.sleep(500);
+                            *//*Thread.sleep(500);
                             log.info("触发预警规则！！！" + Thread.currentThread().getName());
-                            publisher.publishEvent(new WarnEvent(this, "测试" + Thread.currentThread().getName()));*/
+                            publisher.publishEvent(new WarnEvent(this, "测试" + Thread.currentThread().getName()));*//*
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -67,6 +67,6 @@ public class TaskJob extends QuartzJobBean {
                 }
             });
 
-        });
+        });*/
     }
 }

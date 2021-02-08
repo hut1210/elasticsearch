@@ -112,7 +112,7 @@ public class HttpTest {
         map.put("customerId",179);
         JSONArray jsonArray = JSONArray.fromObject(map);*/
         // String qrCode="[{\"subOrderId\":\"1222\",\"vendorId\":\"11\",\"weight\":8,\"volume\":0,\"packageNum\":8}]";
-        String qrCode = "{\"startT\":\"2020-11-13 00:00:00\",\"endT\":\"2020-11-13 23:59:00\",\"page\":1,\"limit\":100}";
+        String qrCode = "{\"startT\":\"2020-11-13 00:00:00\",\"endT\":\"2020-11-13 23:59:00\",\"page\":1,\"limit\":1}";
         String s = doPost(qrCode, postUrl, macUser, macKey);
         System.out.println(s);
 
