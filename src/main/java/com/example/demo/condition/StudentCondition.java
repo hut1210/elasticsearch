@@ -1,6 +1,8 @@
 package com.example.demo.condition;
 
+import com.example.demo.annotation.FilterShould;
 import com.example.demo.annotation.Filter_Term;
+import com.example.demo.annotation.Filter_Terms;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,4 +18,7 @@ public class StudentCondition implements Serializable {
 
     @Filter_Term(fieldName = "name")
     private String name;
+
+    @Filter_Terms(fieldName = "age",split = ",")
+    private String age;
 }

@@ -297,7 +297,9 @@ class DemoApplicationTests {
     @Test
     public void testAggs7() throws IOException {
         StudentCondition condition = new StudentCondition();
-        condition.setName("王皮皮");
+        //condition.setName("王皮皮");
+        //类似于in
+        condition.setAge("20,18,45");
 
         QueryBuilders.termQuery("name","王皮皮");
 
@@ -305,7 +307,7 @@ class DemoApplicationTests {
 
         TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
 
-        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(),condition1,condition2);
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1,condition2);
         System.out.println("ssb --->"+ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
