@@ -1,28 +1,36 @@
 package com.example.demo;
 
 import com.example.demo.builder.helper.AggregationHelper;
+import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.condition.StudentCondition;
 import com.example.demo.condition.TermsAggregationCondition;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.domain.Student;
 import com.example.demo.dto.OwnerAndWarehouseDto;
-import net.minidev.json.JSONUtil;
+import com.example.demo.util.ReportUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.*;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.InternalOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.matrix.stats.MatrixStats;
 import org.elasticsearch.search.aggregations.metrics.Avg;
-import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
+import org.elasticsearch.search.aggregations.metrics.ParsedStats;
+import org.elasticsearch.search.aggregations.metrics.Stats;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
@@ -51,6 +59,10 @@ class DemoApplicationTests {
 
     @Resource
     private RestHighLevelClient client;
+
+    /*@Resource
+    private TransportClient transportClient;*/
+
     @Test
     void contextLoads() {
     }
@@ -224,6 +236,7 @@ class DemoApplicationTests {
         condition1.order("_key",false);
 
         condition1.avg("avgAge","age");
+        condition1.sum("sumAge","age");
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1);
         System.out.println("ssb --->"+ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
@@ -232,6 +245,8 @@ class DemoApplicationTests {
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             System.out.println("searchResponse --->"+searchResponse);
+            List<Map<String,String>> list = ReportUtils.analySearchResponse(searchResponse,condition1);
+            System.out.println(list);
         } catch (Exception e) {
             throw new RuntimeException("查询异常", e);
         }
@@ -240,12 +255,22 @@ class DemoApplicationTests {
     @Test
     public void testAggs5() throws IOException {
         StudentCondition condition = new StudentCondition();
-        condition.setName("王皮皮");
+        //condition.setName("王皮皮");
 
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.build(condition);
         System.out.println("ssb --->"+ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
+
+        /*SearchResponse response = transportClient.prepareSearch("student_index")
+                .addAggregation(AggregationBuilders.stats("ageAgg").field("age"))
+                .get();
+        Stats ageAgg = response.getAggregations().get("ageAgg");
+        System.out.println("总数："+ageAgg.getCount());
+        System.out.println("最小值："+ageAgg.getMin());
+        System.out.println("最大值："+ageAgg.getMax());
+        System.out.println("平均值："+ageAgg.getAvg());
+        System.out.println("和："+ageAgg.getSum());*/
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -268,6 +293,7 @@ class DemoApplicationTests {
         condition1.avg("avgAge","age");
 
         TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
+        condition2.sum("sumAge","age");
 
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(),condition1,condition2);
         System.out.println("ssb --->"+ssb);
@@ -277,6 +303,9 @@ class DemoApplicationTests {
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             System.out.println("searchResponse --->"+searchResponse);
+
+            List<Map<String,String>> list = ReportUtils.analySearchResponse(searchResponse,condition1,condition2);
+
             Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
             if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
                 ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
@@ -369,6 +398,45 @@ class DemoApplicationTests {
             list.forEach(System.out::println);
         } catch (Exception e) {
             throw new RuntimeException("查询异常", e);
+        }
+    }
+
+    @Test
+    public void testAggs8() throws IOException {
+        try {
+            SearchRequest searchRequest = new SearchRequest();
+            searchRequest.indices("student_index");
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            AggregationBuilder avg = AggregationBuilders.stats("sumAgg").field("age");    // @1
+            sourceBuilder.aggregation(avg);
+            sourceBuilder.size(0);
+
+            /*SearchSourceBuilder sourceBuilder2 = com.example.demo.builder.QueryBuilder.build(CommonDeliveryCondition.builder()
+            .createTimeStart("2021-02-06")
+            .createTimeEnd("2021-02-10")
+            .networkCode("1").build());
+            sourceBuilder2.aggregation(avg).size(0);
+            System.out.println("sourceBuilder2 ----"+sourceBuilder2);*/
+
+            BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.rangeQuery("age").gte(20).lte(50));
+                    if(1>0){
+                        queryBuilder.must(QueryBuilders.termQuery("age",20));
+                    }
+            sourceBuilder.query(
+                    queryBuilder
+            );
+
+            System.out.println("sourceBuilder---->"+sourceBuilder);
+            searchRequest.source(sourceBuilder);
+            SearchResponse result = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println(result);
+            Aggregation aggregation = result.getAggregations().get("sumAgg");
+            ParsedStats parsedStats = (ParsedStats)aggregation;
+            System.out.println(parsedStats.getSum());
+
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 

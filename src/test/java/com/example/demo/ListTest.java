@@ -49,6 +49,7 @@ public class ListTest {
 
         System.out.println(JSONObject.toJSONString(getIndexOverview2(new CommonDeliveryCondition())));
 
+        System.out.println(JSONObject.toJSONString(doGetCommonDeliveryLineChart(new CommonDeliveryCondition(),"")));
 
     }
 
@@ -221,6 +222,30 @@ public class ListTest {
         for (int i = 0; i < seriesList.size(); i++) {
             xdataList.add(i);
         }
+        map.put("xdata", xdataList);
+        map.put("series", seriesList);
+        return map;
+    }
+
+    /**
+     * 获取运单总量、配送总量折线图
+     *
+     * @param commonDeliveryCondition
+     * @param column
+     * @return
+     */
+    public static Map doGetCommonDeliveryLineChart(CommonDeliveryCondition commonDeliveryCondition, String column) {
+        Map map = new HashMap();
+        List xdataList = new ArrayList<>();
+        List seriesList = new ArrayList<>();
+        Map lineChartMap = new HashMap();
+        lineChartMap.put("2021-02-08","10");
+        lineChartMap.put("2021-02-09","20");
+        lineChartMap.put("2021-02-10","30");
+        lineChartMap.keySet().forEach(key -> {
+            seriesList.add(key);
+            xdataList.add(lineChartMap.get(key));
+        });
         map.put("xdata", xdataList);
         map.put("series", seriesList);
         return map;

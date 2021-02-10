@@ -4,7 +4,9 @@ import com.example.demo.dto.OptionExtendDto;
 import com.example.demo.dto.WarnRulesDto;
 import com.example.demo.enums.WarnTargetEnum;
 import com.example.demo.util.DateUtils;
+import com.example.demo.util.ReportUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -41,5 +43,22 @@ public class DateUtilsTest {
         WarnRulesDto warnRulesDto = new WarnRulesDto();
         warnRulesDto.setOptionExtendDtoList(optionExtendDtoList);
         System.out.println(warnRulesDto);
+
+        //计算开始时间和结束时间的差值
+        int difference = DateUtils.diffDate(new Date(),new Date());
+        Date startTime = DateUtils.getDateForBegin(new Date(),-(difference+1));
+        Date endTime = DateUtils.getDateForEnd(new Date(),-(difference+1));
+        System.out.println(difference+"  "+startTime+"   "+endTime);
+
+
+        String percent = String.valueOf(new BigDecimal("100")
+                .divide(new BigDecimal("200"), 4, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .setScale(2, BigDecimal.ROUND_HALF_UP));
+
+        String percent2 = ReportUtils.toPercent(new BigDecimal("100"), new BigDecimal("200"));
+
+        System.out.println(percent+"    "+percent2);
+
     }
 }

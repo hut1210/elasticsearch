@@ -63,7 +63,7 @@ public class QueryBuilder {
     }
 
 
-    private static BoolQueryBuilder setSearchSource(SearchSourceBuilder searchSource, Object object) {
+    public static BoolQueryBuilder setSearchSource(SearchSourceBuilder searchSource, Object object) {
 
         if (isBasic(object)) {
             return null;
