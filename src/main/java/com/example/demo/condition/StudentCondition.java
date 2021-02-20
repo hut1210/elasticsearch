@@ -6,6 +6,7 @@ import com.example.demo.annotation.Filter_Terms;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author huteng5
@@ -20,5 +21,5 @@ public class StudentCondition implements Serializable {
     private String name;
 
     @Filter_Terms(fieldName = "age",split = ",")
-    private String age;
+    private List<String> age;
 }

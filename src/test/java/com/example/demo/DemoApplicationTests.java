@@ -255,9 +255,10 @@ class DemoApplicationTests {
     @Test
     public void testAggs5() throws IOException {
         StudentCondition condition = new StudentCondition();
-        //condition.setName("王皮皮");
+        condition.setName("王皮皮");
 
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.build(condition);
+        //ssb.query(QueryBuilders.termQuery("name","王皮皮"));
         System.out.println("ssb --->"+ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
@@ -328,7 +329,11 @@ class DemoApplicationTests {
         StudentCondition condition = new StudentCondition();
         //condition.setName("王皮皮");
         //类似于in
-        condition.setAge("20,18,45");
+        List<String> list1 = new ArrayList<>();
+        list1.add("20");
+        list1.add("18");
+        list1.add("45");
+        condition.setAge(list1);
 
         QueryBuilders.termQuery("name","王皮皮");
 

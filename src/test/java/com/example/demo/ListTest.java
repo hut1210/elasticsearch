@@ -29,11 +29,11 @@ public class ListTest {
             list.add(CommonDeliveryOverviewDto.builder()
                     .networkName("西藏网点"+i)
                     .bizType(String.valueOf(i))
-                    .waybillAmount(1000)
-                    .distributionAmount(200)
-                    .signedInAmount(300)
-                    .cancelAmount(10)
-                    .rejectionAmount(20)
+                    .waybillAmount("1000")
+                    .distributionAmount("200")
+                    .signedInAmount("300")
+                    .cancelAmount("10")
+                    .rejectionAmount("20")
                     .deliveryCompletionRate("80%")
                     .avgDistributionDuration(2)
                     .build());
@@ -55,10 +55,10 @@ public class ListTest {
 
     private static CommonDeliveryCondition defaultCommonDeliveryCondition(CommonDeliveryCondition commonDeliveryCondition){
         if (StringUtils.isEmpty(commonDeliveryCondition.getCreateTimeStart())) {
-            commonDeliveryCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATETIME_FORMAT));
+            //commonDeliveryCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATETIME_FORMAT));
         }
         if (StringUtils.isEmpty(commonDeliveryCondition.getCreateTimeEnd())) {
-            commonDeliveryCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getDateForEnd(new Date(), -1), DateUtils.DATETIME_FORMAT));
+            //commonDeliveryCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getDateForEnd(new Date(), -1), DateUtils.DATETIME_FORMAT));
         }
 
         return commonDeliveryCondition;
@@ -73,7 +73,7 @@ public class ListTest {
         List<Map> distributionList = new ArrayList<>();
         //运单总量
         //TODO 获取运单总量
-        int totalAmount = 1000;
+        String totalAmount = "1000";
         IndexOverviewDto totalAmountDto = IndexOverviewDto.builder()
                 .title("运单总量")
                 .num(totalAmount)
@@ -82,7 +82,7 @@ public class ListTest {
         distributionList.add(JSONObject.parseObject(JSON.toJSONString(totalAmountDto)));
         for (CommonDeliveryEnum commonDeliveryEnum : CommonDeliveryEnum.values()){
             //TODO 获取其他数量
-            int num = commonDeliveryEnum.getNum();
+            String num = String.valueOf(commonDeliveryEnum.getNum());
             String percent = String.valueOf(new BigDecimal(num)
                     .divide(new BigDecimal(totalAmount),4,BigDecimal.ROUND_HALF_UP)
                     .multiply(new BigDecimal("100"))

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IndexOverviewDto {
     private String title;
-    private Integer num;
+    private String num;
     private String percent;
     private String note;
 }

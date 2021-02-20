@@ -28,23 +28,27 @@ public class CommonDeliveryOverviewDto {
     /**
      * 运单量
      */
-    private Integer waybillAmount;
+    private String waybillAmount="0";
+    /**
+     * 在途单量
+     */
+    private String onTheWayAmount="0";
     /**
      * 配送单量
      */
-    private Integer distributionAmount;
+    private String distributionAmount="0";
     /**
      * 已签收单量
      */
-    private Integer signedInAmount;
+    private String signedInAmount="0";
     /**
      * 取消单量
      */
-    private Integer cancelAmount;
+    private String cancelAmount="0";
     /**
      * 拒收单量
      */
-    private Integer rejectionAmount;
+    private String rejectionAmount="0";
     /**
      * 派送完成率
      */
