@@ -12,6 +12,8 @@ import com.example.demo.dto.OwnerAndWarehouseDto;
 import com.example.demo.dto.WaybillReportOverviewDto;
 import com.example.demo.enums.CommonDeliveryEnum;
 import com.example.demo.enums.WaybillReportEnum;
+import com.example.demo.service.EsQueryService;
+import com.example.demo.util.BeanUtil;
 import com.example.demo.util.DateUtils;
 import com.example.demo.util.ReportUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -47,50 +49,66 @@ public class WaybillReportTest {
     @Resource
     private RestHighLevelClient client;
 
-    private static final String index = "common_delivery_monitor_index";
+    @Resource
+    private EsQueryService esQueryService;
+
+    private static final String waybillReportMonitorIndex = "common_delivery_monitor_index";
+
+    private static final String waybillReportMonitorType = "_doc";
+
 
     /**
-     * 获取运单总量、配送总量折线图
+     * 获取运单业务监控报表列表
      *
      * @return
      */
     @Test
-    public void test() throws IOException {
-        WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
+    public void testQueryWaybillReportPage() throws IOException {
+        WaybillReportPageCondition waybillReportPageCondition = new WaybillReportPageCondition();
+        queryWaybillReportPage(waybillReportPageCondition);
+    }
 
-        Map<String, String> map = new HashMap<>();
+    /**
+     * 获取运单业务监控报表列表
+     *
+     * @return
+     */
+    public void queryWaybillReportPage(WaybillReportPageCondition waybillReportPageCondition) throws IOException {
+        WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
+        BeanUtils.copyProperties(waybillReportPageCondition, waybillReportCondition);
+        List<WaybillReportOverviewDto> waybillReportOverviewDtoList = new ArrayList<>();
         //根据日期分组查询
         TermsAggregationCondition termsAggregationCondition = new TermsAggregationCondition(CommonDeliveryConstant.FIRST_TIME);
         termsAggregationCondition.order(CommonDeliveryConstant.FIRST_TIME, false);
+        termsAggregationCondition.size(10000);
         //根据目的网点分组查询
         TermsAggregationCondition termsAggregationCondition2 = new TermsAggregationCondition("old_site_id");
-        termsAggregationCondition.order(CommonDeliveryConstant.FIRST_TIME, false);
-        SearchSourceBuilder ssb = QueryBuilder.buildGroup(waybillReportCondition, termsAggregationCondition, termsAggregationCondition2);
-        log.info("getCommonDeliveryLineChart ssb------->{}", ssb);
+        termsAggregationCondition2.order(CommonDeliveryConstant.FIRST_TIME, false);
+        termsAggregationCondition2.size(10000);
+        SearchSourceBuilder sourceBuilder = QueryBuilder.buildGroup(waybillReportCondition, termsAggregationCondition, termsAggregationCondition2);
+        log.info("getCommonDeliveryLineChart ssb------->{}", sourceBuilder);
 
-        SearchRequest searchRequest = new SearchRequest(index);
-        searchRequest.source(ssb);
-
-        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
         log.info("getCommonDeliveryLineChart searchResponse------->{}", searchResponse);
         Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
         if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
-            ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+            ParsedLongTerms teams = (ParsedLongTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
             if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
                 teams.getBuckets().forEach(bucket -> {
                     String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
                     if (StringUtils.isNotBlank(key)) {
                         System.out.println("time-----" + key);
-                        map.put(key, String.valueOf(bucket.getDocCount()));
+                        //map.put(key, String.valueOf(bucket.getDocCount()));
                         Map<String, Aggregation> asMap = bucket.getAggregations().getAsMap();
                         if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
-                            ParsedLongTerms aggregation = (ParsedLongTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
+                            ParsedStringTerms aggregation = (ParsedStringTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
                             if (CollectionUtils.isNotEmpty(aggregation.getBuckets())) {
                                 aggregation.getBuckets().forEach(bucket1 -> {
                                     String key1 = bucket1.getKey() == null ? "" : bucket1.getKey().toString();
                                     if (StringUtils.isNotBlank(key1)) {
-                                        System.out.println("oldSiteId-----" + key1 + ",-----count-----" + bucket1.getDocCount());
-                                        getWaybillReportOverviewDto(waybillReportCondition, key, key1);
+                                        System.out.println("oldSiteId-----" + key1 + ",---------count-----"+bucket1.getDocCount()+",----aggregation.getBuckets().size-----" + aggregation.getBuckets().size());
+                                        WaybillReportOverviewDto waybillReportOverviewDto = getWaybillReportOverviewDto(waybillReportCondition, key, key1,aggregation.getBuckets().size());
+                                        waybillReportOverviewDtoList.add(waybillReportOverviewDto);
                                     }
                                 });
                             }
@@ -99,9 +117,10 @@ public class WaybillReportTest {
                 });
             }
         }
+        waybillReportOverviewDtoList.forEach(System.out::println);
     }
 
-    private WaybillReportOverviewDto getWaybillReportOverviewDto(WaybillReportCondition waybillReportCondition, String date, String oldSiteId) {
+    private WaybillReportOverviewDto getWaybillReportOverviewDto(WaybillReportCondition waybillReportCondition, String date, String oldSiteId,int count) {
         WaybillReportOverviewDto waybillReportOverviewDto = new WaybillReportOverviewDto();
 
         WaybillReportCondition waybillReportCondition1 = new WaybillReportCondition();
@@ -113,22 +132,20 @@ public class WaybillReportTest {
         waybillReportCondition1.setCreateTimeStart(date);
         waybillReportCondition1.setCreateTimeEnd(date);
 
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(index);
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportCondition1);
+        sourceBuilder.size(10000);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
-        searchRequest.source(sourceBuilder);
-        SearchResponse result = null;
-        try {
-            result = client.search(searchRequest, RequestOptions.DEFAULT);
-            log.info("getAmount result------->{}", result);
-            SearchHit[] searchHits = result.getHits().getHits();
-            if (searchHits != null && searchHits.length > 0) {
-                Map<String, Object> map = searchHits[0].getSourceAsMap();
-            }
-        } catch (IOException e) {
-            log.error("运单业务指标概览获取单量异常", e);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
+        log.info("getAmount result------->{}", searchResponse);
+        log.info("getAmount result2------->{}", searchResponse.getHits().getTotalHits().value);
+        SearchHit[] searchHits = searchResponse.getHits().getHits();
+        if (searchHits != null && searchHits.length > 0) {
+            Map<String, Object> map = searchHits[0].getSourceAsMap();
+            waybillReportOverviewDto.setCreateTime(map.get("first_time").toString());
+            waybillReportOverviewDto.setNetworkName(map.get("old_site_name").toString());
+            waybillReportOverviewDto.setNetworkType(map.get("business_type").toString());
         }
+
         return waybillReportOverviewDto;
     }
 
@@ -146,7 +163,7 @@ public class WaybillReportTest {
         waybillReportDistributionCondition.setCreateTimeEnd("2020-01-11");
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(index);
+        searchRequest.indices(waybillReportMonitorIndex);
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportDistributionCondition);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
         searchRequest.source(sourceBuilder);
@@ -174,7 +191,7 @@ public class WaybillReportTest {
         waybillReportCollectCondition.setCreateTimeEnd("2020-01-11");
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(index);
+        searchRequest.indices(waybillReportMonitorIndex);
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportCollectCondition);
         //sourceBuilder.size(10000);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
@@ -194,29 +211,69 @@ public class WaybillReportTest {
     }
 
     @Test
-    public void getIndexOverview(){
+    public void getCollectAmount2(){
+        //揽收量
+        WaybillReportCollectCondition waybillReportCollectCondition = new WaybillReportCollectCondition();
+        //所有始发网点为西藏网点
+        waybillReportCollectCondition.setBeginNetworkCode(CommonDeliveryConstant.siteList);
+        waybillReportCollectCondition.setCreateTimeStart("2020-01-03");
+        waybillReportCollectCondition.setCreateTimeEnd("2020-01-11");
+
+        SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportCollectCondition);
+        //sourceBuilder.size(10000);
+        log.info("getAmount sourceBuilder------->{}", sourceBuilder);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
+        log.info("getAmount result------->{}", searchResponse);
+        log.info("揽收量="+searchResponse.getHits().getTotalHits().value);
+        SearchHit[] searchHits = searchResponse.getHits().getHits();
+        if (searchHits != null && searchHits.length > 0) {
+            Map<String, Object> map = searchHits[0].getSourceAsMap();
+        }
+    }
+
+    /**
+     * 运单业务监控报表
+     */
+    @Test
+    public void testGetIndexOverview(){
+
         WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
         waybillReportCondition.setCreateTimeStart("2020-01-03");
-        waybillReportCondition.setCreateTimeEnd("2020-01-11");
+        waybillReportCondition.setCreateTimeEnd("2020-01-16");
+        Map responseMap = new HashMap();
+        //概览数据集合
+        responseMap.put("waybillList", getIndexOverview(waybillReportCondition));
+        //配送量折线图
+        responseMap.put("distributionAmountLineChart", doGetDistributionAmountLineChart(waybillReportCondition));
+        //揽收量折线图
+        responseMap.put("collectAmountLineChart", doGetCollectAmountLineChart(waybillReportCondition));
+        System.out.println(JSON.toJSONString(responseMap));
+    }
 
+    /**
+     * 运单业务监控报表
+     */
+    public List getIndexOverview(WaybillReportCondition waybillReportCondition){
+        WaybillReportCondition waybillReportCondition1 = new WaybillReportCondition();
+        BeanUtils.copyProperties(waybillReportCondition,waybillReportCondition1);
         List<Map> distributionList = new ArrayList<>();
         //配送量+揽收量
-        String distributionAmount = getDistributionAmountNew(waybillReportCondition);
-        String collectAmount = getCollectAmountNew(waybillReportCondition);
+        String distributionAmount = getDistributionAmountNew(waybillReportCondition1);
+        String collectAmount = getCollectAmountNew(waybillReportCondition1);
         //运单总量
         String totalAmount = String.valueOf(new BigDecimal(distributionAmount).add(new BigDecimal(collectAmount)));
         //环比运单总量
         //计算开始时间和结束时间的差
-        int difference = DateUtils.diffDate(DateUtils.parseDate(waybillReportCondition.getCreateTimeStart(),DateUtils.DATE_FORMAT),DateUtils.parseDate(waybillReportCondition.getCreateTimeEnd(),DateUtils.DATE_FORMAT));
-        Date startTime = DateUtils.getDateForBegin(DateUtils.parseDate(waybillReportCondition.getCreateTimeStart(),DateUtils.DATE_FORMAT),difference-1);
-        Date endTime = DateUtils.getDateForEnd(DateUtils.parseDate(waybillReportCondition.getCreateTimeEnd(),DateUtils.DATE_FORMAT),difference-1);
+        int difference = DateUtils.diffDate(DateUtils.parseDate(waybillReportCondition1.getCreateTimeStart(),DateUtils.DATE_FORMAT),DateUtils.parseDate(waybillReportCondition1.getCreateTimeEnd(),DateUtils.DATE_FORMAT));
+        Date startTime = DateUtils.getDateForBegin(DateUtils.parseDate(waybillReportCondition1.getCreateTimeStart(),DateUtils.DATE_FORMAT),difference-1);
+        Date endTime = DateUtils.getDateForEnd(DateUtils.parseDate(waybillReportCondition1.getCreateTimeEnd(),DateUtils.DATE_FORMAT),difference-1);
 
         //获取环比数量
-        waybillReportCondition.setCreateTimeStart(DateUtils.formatDate(startTime,DateUtils.DATE_FORMAT));
-        waybillReportCondition.setCreateTimeEnd(DateUtils.formatDate(endTime,DateUtils.DATE_FORMAT));
+        waybillReportCondition1.setCreateTimeStart(DateUtils.formatDate(startTime,DateUtils.DATE_FORMAT));
+        waybillReportCondition1.setCreateTimeEnd(DateUtils.formatDate(endTime,DateUtils.DATE_FORMAT));
 
-        String linkRelativeRatioDistributionAmount = getDistributionAmountNew(waybillReportCondition);
-        String linkRelativeRatioCollectAmount = getCollectAmountNew(waybillReportCondition);
+        String linkRelativeRatioDistributionAmount = getDistributionAmountNew(waybillReportCondition1);
+        String linkRelativeRatioCollectAmount = getCollectAmountNew(waybillReportCondition1);
 
         String linkRelativeRatioAmount = String.valueOf(new BigDecimal(linkRelativeRatioDistributionAmount).add(new BigDecimal(linkRelativeRatioCollectAmount)));
         //环比计算
@@ -252,6 +309,7 @@ public class WaybillReportTest {
                         .build())));
 
         distributionList.forEach(System.out::println);
+        return distributionList;
     }
 
     private String getDistributionAmountNew(WaybillReportCondition waybillReportCondition){
@@ -263,21 +321,13 @@ public class WaybillReportTest {
         //目的网点是西藏网点
         waybillReportDistributionCondition.setTargetNetworkCode(CommonDeliveryConstant.siteList);
 
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(index);
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportDistributionCondition);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
-        searchRequest.source(sourceBuilder);
-        SearchResponse result = null;
-        try {
-            result = client.search(searchRequest, RequestOptions.DEFAULT);
-            log.info("getAmount result------->{}", result);
-            log.info("配送量="+result.getHits().getTotalHits().value);
-            return String.valueOf(result.getHits().getTotalHits().value);
-        } catch (IOException e) {
-            log.error("运单业务指标概览获取单量异常", e);
-        }
-        return "0";
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
+        log.info("getAmount result------->{}", searchResponse);
+        log.info("配送量="+searchResponse.getHits().getTotalHits().value);
+        return String.valueOf(searchResponse.getHits().getTotalHits().value);
+
     }
 
     private String getCollectAmountNew(WaybillReportCondition waybillReportCondition){
@@ -287,21 +337,128 @@ public class WaybillReportTest {
         //所有始发网点为西藏网点
         waybillReportCollectCondition.setBeginNetworkCode(CommonDeliveryConstant.siteList);
 
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(index);
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(waybillReportCollectCondition);
         //sourceBuilder.size(10000);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
-        searchRequest.source(sourceBuilder);
-        SearchResponse result = null;
-        try {
-            result = client.search(searchRequest, RequestOptions.DEFAULT);
-            log.info("getAmount result------->{}", result);
-            log.info("揽收量="+result.getHits().getTotalHits().value);
-            return String.valueOf(result.getHits().getTotalHits().value);
-        } catch (IOException e) {
-            log.error("运单业务指标概览获取单量异常", e);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
+        log.info("getAmount result------->{}", searchResponse);
+        log.info("揽收量="+searchResponse.getHits().getTotalHits().value);
+        return String.valueOf(searchResponse.getHits().getTotalHits().value);
+    }
+
+    /**
+     * 运单业务折线图
+     *
+     * @param waybillReportCondition
+     * @return
+     */
+    private Map doGetDistributionAmountLineChart(WaybillReportCondition waybillReportCondition) {
+        Map map = new HashMap();
+        List xdataList = new ArrayList<>();
+        List seriesList = new ArrayList<>();
+        Map lineChartMap = getDistributionAmountLineChart(waybillReportCondition);
+        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date(waybillReportCondition.getCreateTimeStart(), waybillReportCondition.getCreateTimeEnd());
+        datesBetween2Date.forEach(date->{
+            seriesList.add(date);
+            if(lineChartMap.keySet().contains(date)){
+                xdataList.add(lineChartMap.get(date));
+            }else{
+                xdataList.add("0");
+            }
+        });
+        map.put("xdata", xdataList);
+        map.put("series", seriesList);
+        return map;
+    }
+
+    public Map getDistributionAmountLineChart(WaybillReportCondition waybillReportCondition) {
+        //配送量
+        WaybillReportDistributionCondition waybillReportDistributionCondition = new WaybillReportDistributionCondition();
+        BeanUtils.copyProperties(waybillReportCondition,waybillReportDistributionCondition);
+        //始发网点不是西藏网点
+        waybillReportDistributionCondition.setBeginNetworkCode(CommonDeliveryConstant.siteList);
+        //目的网点是西藏网点
+        waybillReportDistributionCondition.setTargetNetworkCode(CommonDeliveryConstant.siteList);
+
+        Map<String, String> map = new HashMap<>();
+        //根据日期分组查询
+        TermsAggregationCondition termsAggregationCondition = new TermsAggregationCondition(CommonDeliveryConstant.FIRST_TIME);
+        //根据时间倒叙
+        termsAggregationCondition.order(CommonDeliveryConstant.FIRST_TIME, false);
+        termsAggregationCondition.size(10000);
+        SearchSourceBuilder ssb = QueryBuilder.buildGroup(waybillReportDistributionCondition, termsAggregationCondition);
+        log.info("getWaybillReportLineChart ssb------->{}", ssb);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, ssb);
+        log.info("getWaybillReportLineChart searchResponse------->{}", searchResponse);
+        Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
+        if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+            ParsedLongTerms teams = (ParsedLongTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+            if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                teams.getBuckets().forEach(bucket->{
+                    String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                    if (StringUtils.isNotBlank(key)) {
+                        map.put(DateUtils.formatDate(DateUtils.parseDate(bucket.getKeyAsString(),DateUtils.DATE_FORMAT),DateUtils.DATE_FORMAT),String.valueOf(bucket.getDocCount()));
+                    }
+                });
+            }
         }
-        return "0";
+        return map;
+    }
+
+    /**
+     * 运单业务折线图
+     *
+     * @param waybillReportCondition
+     * @return
+     */
+    private Map doGetCollectAmountLineChart(WaybillReportCondition waybillReportCondition) {
+        Map map = new HashMap();
+        List xdataList = new ArrayList<>();
+        List seriesList = new ArrayList<>();
+        Map lineChartMap = getCollectAmountLineChart(waybillReportCondition);
+        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date(waybillReportCondition.getCreateTimeStart(), waybillReportCondition.getCreateTimeEnd());
+        datesBetween2Date.forEach(date->{
+            seriesList.add(date);
+            if(lineChartMap.keySet().contains(date)){
+                xdataList.add(lineChartMap.get(date));
+            }else{
+                xdataList.add("0");
+            }
+        });
+        map.put("xdata", xdataList);
+        map.put("series", seriesList);
+        return map;
+    }
+
+
+    public Map getCollectAmountLineChart(WaybillReportCondition waybillReportCondition) {
+        //揽收量
+        WaybillReportCollectCondition waybillReportCollectCondition = new WaybillReportCollectCondition();
+        BeanUtils.copyProperties(waybillReportCondition,waybillReportCollectCondition);
+        //所有始发网点为西藏网点
+        waybillReportCollectCondition.setBeginNetworkCode(CommonDeliveryConstant.siteList);
+        Map<String, String> map = new HashMap<>();
+        //根据日期分组查询
+        TermsAggregationCondition termsAggregationCondition = new TermsAggregationCondition(CommonDeliveryConstant.FIRST_TIME);
+        //根据时间倒叙
+        termsAggregationCondition.order(CommonDeliveryConstant.FIRST_TIME, false);
+        termsAggregationCondition.size(10000);
+        SearchSourceBuilder ssb = QueryBuilder.buildGroup(waybillReportCollectCondition, termsAggregationCondition);
+        log.info("getWaybillReportLineChart ssb------->{}", ssb);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, ssb);
+        log.info("getWaybillReportLineChart searchResponse------->{}", searchResponse);
+        Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
+        if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+            ParsedLongTerms teams = (ParsedLongTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+            if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                teams.getBuckets().forEach(bucket->{
+                    String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                    if (StringUtils.isNotBlank(key)) {
+                        map.put(DateUtils.formatDate(DateUtils.parseDate(bucket.getKeyAsString(),DateUtils.DATE_FORMAT),DateUtils.DATE_FORMAT),String.valueOf(bucket.getDocCount()));
+                    }
+                });
+            }
+        }
+        return map;
     }
 }

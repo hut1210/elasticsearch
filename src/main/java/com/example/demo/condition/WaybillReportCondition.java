@@ -36,7 +36,7 @@ public class WaybillReportCondition {
     /**
      * 网点所属区域
      */
-    @Filter_Term(fieldName = "branch_belongs")
+    @Filter_Term(fieldName = "arrive_area")
     private String networkArea;
     /**
      * 网点业务类型
