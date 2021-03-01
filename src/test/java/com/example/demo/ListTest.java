@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.dto.CommonDeliveryOverviewDto;
 import com.example.demo.dto.IndexOverviewDto;
+import com.example.demo.dto.NetWorkDto;
 import com.example.demo.dto.PieChatDto;
 import com.example.demo.enums.CommonDeliveryEnum;
 import com.example.demo.enums.SourceEnum;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author huteng5
@@ -50,6 +52,9 @@ public class ListTest {
         System.out.println(JSONObject.toJSONString(getIndexOverview2(new CommonDeliveryCondition())));
 
         System.out.println(JSONObject.toJSONString(doGetCommonDeliveryLineChart(new CommonDeliveryCondition(),"")));
+
+        List<String> names= list.stream().map(CommonDeliveryOverviewDto::getNetworkName).collect(Collectors.toList());
+        names.forEach(System.out::println);
 
     }
 

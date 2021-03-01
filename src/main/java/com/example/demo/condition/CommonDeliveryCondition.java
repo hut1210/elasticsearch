@@ -35,10 +35,15 @@ public class CommonDeliveryCondition {
     @Filter_Range(fieldName = "first_time", type = RangeTypeEnum.LTE)
     private String createTimeEnd;
     /**
-     * 配送网点编号
+     *配送网点编号
+     */
+    @Filter_Term(fieldName = "old_site_id")
+    private String networkCode;
+    /**
+     * 目的网点
      */
     @Filter_Terms(fieldName = "old_site_id", split = ",")
-    private List<String> networkCode;
+    private List<String> targetNetworkCode;
     /**
      * 配送状态
      */

@@ -44,6 +44,11 @@ public class WaybillReportCondition {
     @Filter_Term(fieldName = "branch_business_type")
     private String networkBusinessType;
     /**
+     * 目的网点(接收前端传过来的)
+     */
+    @Filter_Term(fieldName = "old_site_id")
+    private String networkCode;
+    /**
      * 目的网点
      */
     @Filter_Terms(fieldName = "old_site_id",split = ",")

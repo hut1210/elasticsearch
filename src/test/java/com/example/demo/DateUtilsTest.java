@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.dto.NetWorkDto;
 import com.example.demo.dto.OptionExtendDto;
 import com.example.demo.dto.WarnRulesDto;
 import com.example.demo.enums.WarnTargetEnum;
@@ -7,10 +8,8 @@ import com.example.demo.util.DateUtils;
 import com.example.demo.util.ReportUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author huteng5
@@ -60,5 +59,15 @@ public class DateUtilsTest {
 
         System.out.println(percent+"    "+percent2);
 
+        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date("2021-02-23", "2021-02-27");
+        List xdataList = new ArrayList<>();
+        List seriesList = new ArrayList<>();
+        datesBetween2Date.forEach(date->{
+            seriesList.add(date);
+            xdataList.add(date);
+        });
+        seriesList.forEach(System.out::println);
+        System.out.println("***************************************");
+        xdataList.forEach(System.out::println);
     }
 }

@@ -1,12 +1,20 @@
 package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.dto.TestDto;
+import com.example.demo.enums.PostUrlEnum;
+import com.example.demo.util.DateUtils;
+import com.example.demo.util.HttpUtil;
+import org.mapstruct.ap.shaded.freemarker.template.utility.DateUtil;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,14 +26,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("test")
 public class TestController {
-
+    @Resource
+    private HttpUtil httpUtil;
     @PostMapping("/index")
     public String index(@RequestBody Map<String, Object> requestMap){
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        if (StringUtils.isEmpty(commonDeliveryCondition.getCreateTimeStart())) {
+            commonDeliveryCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATE_FORMAT));
+        }
+        if (StringUtils.isEmpty(commonDeliveryCondition.getCreateTimeEnd())) {
+            commonDeliveryCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getDateForEnd(new Date(), -1), DateUtils.DATE_FORMAT));
+        }
+        String result = httpUtil.doPost(JSONObject.toJSONString(commonDeliveryCondition), PostUrlEnum.COMMONDELIVERYINDEXOVERVIEW.getUrl());
+        System.out.println("result===="+result);
         System.out.println("requestMap===="+requestMap.toString());
         Map map = new HashMap<>();
         map.put("code",200);
         map.put("msg","请求成功");
-        map.put("data",null);
+        map.put("data",result);
         return JSONObject.toJSONString(map);
     }
 }

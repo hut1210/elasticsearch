@@ -53,9 +53,6 @@ public class CommonDeliveryTest {
     @Test
     public void test1() throws IOException {
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
-        List<String> list = new ArrayList<>();
-        //list.add("572997");
-        commonDeliveryCondition.setNetworkCode(list.size()>0?list:CommonDeliveryConstant.siteList);
         /*commonDeliveryCondition.setCreateTimeStart("2020-01-03");
         commonDeliveryCondition.setCreateTimeEnd("2020-01-03");*/
         TermsAggregationCondition condition1 = new TermsAggregationCondition("old_site_id");
@@ -72,7 +69,7 @@ public class CommonDeliveryTest {
             System.out.println("searchResponse --->" + searchResponse);
             Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
             if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
-                ParsedLongTerms teams = (ParsedLongTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
+                ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
                 if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
                     for (Terms.Bucket bucket : teams.getBuckets()) {
                         String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
@@ -126,11 +123,6 @@ public class CommonDeliveryTest {
         for (CommonDeliveryEnum commonDeliveryEnum : CommonDeliveryEnum.values()) {
             CommonDeliveryCondition commonDeliveryCondition1 = new CommonDeliveryCondition();
             BeanUtils.copyProperties(commonDeliveryCondition, commonDeliveryCondition1);
-            List<String> siteList = new ArrayList<>();
-            if(oldSiteId!=null){
-                siteList.add(oldSiteId);
-            }
-            commonDeliveryCondition1.setNetworkCode(siteList);
             commonDeliveryCondition1 = modifyCommonDeliveryCondition(commonDeliveryCondition1, commonDeliveryEnum);
 
             SearchRequest searchRequest = new SearchRequest();
@@ -219,7 +211,6 @@ public class CommonDeliveryTest {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(index);
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
-        commonDeliveryCondition.setNetworkCode(CommonDeliveryConstant.siteList);
         commonDeliveryCondition.setCreateTimeStart("2020-01-03");
         commonDeliveryCondition.setCreateTimeEnd("2020-01-03");
 
@@ -228,6 +219,7 @@ public class CommonDeliveryTest {
 
         //查询运单量
         SearchSourceBuilder sourceBuilder = QueryBuilder.build(commonDeliveryCondition);
+        sourceBuilder.size(ReportConstant.PAGE_MAX_SIZE);
         log.info("getAmount sourceBuilder------->{}", sourceBuilder);
         searchRequest.source(sourceBuilder);
         SearchResponse result = null;
@@ -255,7 +247,6 @@ public class CommonDeliveryTest {
     @Test
     public void doGetIndexOverview() {
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
-        commonDeliveryCondition.setNetworkCode(CommonDeliveryConstant.siteList);
         commonDeliveryCondition.setCreateTimeStart("2020-01-03");
         commonDeliveryCondition.setCreateTimeEnd("2020-01-03");
         List<Map> distributionList = new ArrayList<>();
