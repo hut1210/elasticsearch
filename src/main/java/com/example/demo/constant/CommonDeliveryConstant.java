@@ -45,6 +45,17 @@ public class CommonDeliveryConstant {
         postSaleEventTime.put(24, "23:00:00-23:59:59");
     }
 
+    public final static Map<Integer,String> postSaleEventHourTime = new HashMap();
+
+    static {
+        postSaleEventTime.put(1, ":00:00-:09:59");
+        postSaleEventTime.put(2, ":10:00-:19:59");
+        postSaleEventTime.put(3, ":20:00-:29:59");
+        postSaleEventTime.put(4, ":30:00-:39:59");
+        postSaleEventTime.put(5, ":40:00-:49:59");
+        postSaleEventTime.put(6, ":50:00-:59:59");
+    }
+
     /**
      * 西藏网点
      */

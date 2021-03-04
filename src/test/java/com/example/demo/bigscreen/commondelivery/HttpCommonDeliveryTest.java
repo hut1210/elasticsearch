@@ -1,12 +1,12 @@
-package com.example.demo;
+package com.example.demo.bigscreen.commondelivery;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.condition.WaybillReportPageCondition;
-import com.example.demo.dto.PostSaleOverviewDto;
-import com.mysql.cj.xdevapi.JsonArray;
+import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.condition.WorkBillCondition;
+import com.example.demo.condition.WorkBillPageCondition;
+import com.example.demo.util.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,20 +32,30 @@ public class HttpCommonDeliveryTest {
     private static final String MAC_NAME = "HmacSHA1";
     private static final String ENCODING = "UTF-8";
     private final static Logger logger = LoggerFactory.getLogger(HttpCommonDeliveryTest.class);
+    //供配获取站点top5
+    private static String postAction = "https://uat-proxy.jd.com/XZService/getDispatchSiteTop5";
+    //配送状态饼图
+    private static String postAction1 = "https://uat-proxy.jd.com/XZService/doGetDistributionStatusPieChat";
+    //业务类型饼图
+    private static String postAction2 = "https://uat-proxy.jd.com/XZService/doGetBusinessTypePieChat";
+    //共配来源饼图
+    private static String postAction3 = "https://uat-proxy.jd.com/XZService/doGetCommonDistributionSourcePieChat";
 
-    private static String postAction = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryPage";
+    public static void main(String[] args) throws Exception {
+        String qrCode = "{\"createTimeStart\":\"2021-02-28\",\"createTimeEnd\":\"2021-02-28\"}";
+        String param = "{\"workBillCondition\":{\"create_time_end\":\"2021-03-02 23:59:59\",\"create_time_start\":\"2021-02-23 00:00:00\"},{\"groupField\":\"mainid\",\"cardinality\":\"mainid\"}}";
+        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        System.out.println("dateWhitBeforeN="+dateWhitBeforeN);
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        commonDeliveryCondition.setCreateTimeStart("2021-03-04");
+        commonDeliveryCondition.setCreateTimeEnd("2021-03-04");
 
-    private static String postAction1 = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryIndexOverview";
+        String s = doPost(JSONObject.toJSONString(commonDeliveryCondition), postAction1, macUser, macKey);
+        System.out.println(JSON.toJSON(s));
+        System.out.println(JSON.toJSONString(s));
 
-    private static String postAction2 = "https://uat-proxy.jd.com/XZService/queryWaybillReportPage";
+    }
 
-    private static String postAction3 = "https://uat-proxy.jd.com/XZService/queryWaybillReportIndexOverview";
-
-    private static String postAction4 = "https://uat-proxy.jd.com/XZService/queryPostSaleEventPage";
-    //postUrl
-    private static String postUrl = new StringBuilder().append(postAction).toString();
-
-    private static String postUrl1 = new StringBuilder().append(postAction1).toString();
     //user (测试环境，线上需提前申请)
     private static String macUser = "lop://403/XZBJ";
     //secret (测试环境，线上需提前申请)
@@ -88,36 +97,6 @@ public class HttpCommonDeliveryTest {
         return null;
     }
 
-    public static void main(String[] args) throws Exception {
-        String qrCode = "{\"createTimeStart\":\"2021-02-17\",\"createTimeEnd\":\"2021-02-24\",\"pageIndex\":1,\"pageSize\":10}";
-        String str="{\"createTimeEnd\":\"2021-03-01\",\"createTimeStart\":\"2021-03-01\",\"networkCode\":\"1455600\",\"networkCompany\":\"1\",\"pageIndex\":1,\"pageSize\":10}";
-        String qrCode1 = "{\"createTimeStart\":\"2021-02-18\",\"createTimeEnd\":\"2021-02-25\"}";
-        String qrCode2 = "{\"createTimeStart\":\"2021-02-18\",\"createTimeEnd\":\"2021-02-25\",\"pageIndex\":1,\"pageSize\":10}";
-        String qrCode4 = "{\"createTime\":\"2021-02-26\",\"pageIndex\":1,\"pageSize\":10}";
-
-        WaybillReportPageCondition waybillReportPageCondition = new WaybillReportPageCondition();
-        waybillReportPageCondition.setPageIndex(1);
-        waybillReportPageCondition.setPageSize(10);
-        waybillReportPageCondition.setCreateTimeStart("2021-03-02");
-        waybillReportPageCondition.setCreateTimeEnd("2021-03-02");
-        waybillReportPageCondition.setNetworkArea("拉萨市");
-        String s = doPost(JSONObject.toJSONString(waybillReportPageCondition), postAction2, macUser, macKey);
-        System.out.println(JSON.toJSON(s));
-        /*System.out.println(JSON.toJSONString(s));
-        JSONObject jsonObject = JSON.parseObject(s);
-        System.out.println("jsonObject------>"+jsonObject);
-        Object data = jsonObject.get("data");
-        System.out.println("data------>"+data);
-        JSONObject l = JSON.parseObject(JSON.toJSONString(data));
-        JSONArray jsonArray= JSONArray.parseArray(JSON.toJSONString(l.get("rows")));
-        System.out.println("jsonArray------>"+jsonArray);
-
-        JSONArray jsonArray2= l.getJSONArray("rows");
-        System.out.println("jsonArray2------>"+jsonArray2);
-        List<PostSaleOverviewDto> postSaleOverviewDtoList = jsonArray2.toJavaList(PostSaleOverviewDto.class);
-        postSaleOverviewDtoList.forEach(System.out::println);*/
-    }
-
     public static String doPost(String param, String url, String macUser, String macKey) {
         //请求参数对象
 
@@ -128,21 +107,15 @@ public class HttpCommonDeliveryTest {
         //httpClient
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         try {
-            param = new String(param.getBytes("iso-8859-1"),"utf-8");
             //request param
             StringEntity params = new StringEntity(param);
             String xdate = getServerTime();
             String contentMd5 = MD5(param);
             String txt = "X-Date: " + xdate + "\n" + "content-md5: " + contentMd5;
             String sign = HmacSHA1Encrypt(txt, macKey);
-
-            //request
             HttpPost request = new HttpPost(url);
-//            HttpGet request = new HttpGet(url);
-
-
             String auth = "hmac username=\"" + macUser + "\", algorithm=\"hmac-sha1\", headers=\"X-Date content-md5\",signature=\"" + sign + "\"";
-            request.addHeader("content-type", "application/json;charset=UTF-8\"");
+            request.addHeader("content-type", "application/json");
             request.addHeader("X-Date", xdate);
             request.addHeader("content-md5", contentMd5);
             request.addHeader("Authorization", auth);

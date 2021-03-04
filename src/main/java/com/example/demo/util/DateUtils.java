@@ -4,10 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class DateUtils {
 
@@ -198,5 +195,105 @@ public class DateUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 获取前n天的开始和结束时间
+     *
+     * @param n
+     */
+    public static Map<String, Date> getDateWhitBeforeN(int n) {
+
+        Map<String, Date> date = new HashMap<>();
+
+        Calendar start = Calendar.getInstance();
+        start.add(Calendar.DAY_OF_MONTH, -n);
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 0);
+
+
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.DAY_OF_MONTH, 0);
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+
+        date.put("start", start.getTime());
+        date.put("end", end.getTime());
+
+        return date;
+
+    }
+
+    /**
+     * 获取前N个月的时间(年-月),不含当前月
+     *
+     * @return
+     */
+    public static List<String> getBeforeNTime(int n) {
+        List<String> dateList = new ArrayList<>();
+        if (n < 1) {
+            return dateList;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTimeInMillis(1581129712000L);
+
+        for (int i = 1; i <= n; i++) {
+            calendar.add(Calendar.MONTH, -1);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            dateList.add(sdf.format(calendar.getTime()));
+        }
+        Collections.reverse(dateList);
+        return dateList;
+    }
+
+    /**
+     * 获取当年的第一天
+     * @return
+     */
+    public static Date getCurrYearFirst(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getYearFirst(currentYear);
+    }
+
+    /**
+     * 获取某年第一天日期
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearFirst(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        Date currYearFirst = calendar.getTime();
+        return currYearFirst;
+    }
+
+    /**
+     * 获取当年的最后一天
+     * @return
+     */
+    public static Date getCurrYearLast(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getYearLast(currentYear);
+    }
+
+    /**
+     * 获取某年最后一天日期
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearLast(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        calendar.roll(Calendar.DAY_OF_YEAR, -1);
+        Date currYearLast = calendar.getTime();
+
+        return currYearLast;
     }
 }

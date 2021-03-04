@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.alibaba.fastjson.JSON;
 import com.example.demo.dto.NetWorkDto;
 import com.example.demo.dto.OptionExtendDto;
 import com.example.demo.dto.WarnRulesDto;
@@ -69,5 +70,47 @@ public class DateUtilsTest {
         seriesList.forEach(System.out::println);
         System.out.println("***************************************");
         xdataList.forEach(System.out::println);
+
+        System.out.println("当年第一天 = "+DateUtils.formatDate(DateUtils.getCurrYearFirst(), DateUtils.DATE_FORMAT));
+
+        String date = "2021-02-25";
+        System.out.println(date.substring(5, 7));
+        System.out.println("***************************************");
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        getDayByMonth(currentYear,1).forEach(System.out::println);
+        TreeMap<Integer,List<String>> map = new TreeMap<>();
+        System.out.println("当前年 = "+currentYear);
+        for (int i=1;i<13;i++){
+            map.put(i,getDayByMonth(currentYear,i));
+        }
+        System.out.println("map = "+ JSON.toJSONString(map));
+    }
+
+    public static List<String> getDayByMonth(int yearParam,int monthParam){
+        List<String> list = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        calendar.set(yearParam, monthParam-1, 1);
+        int year = calendar.get(Calendar.YEAR);//年份
+        int month = calendar.get(Calendar.MONTH) + 1;//月份
+        int day = calendar.getActualMaximum(Calendar.DATE);
+        for (int i = 1; i <= day; i++) {
+            String date=null;
+            if(month<10 && i<10){
+                date = String.valueOf(year)+"-0"+month+"-0"+i;
+            }
+            if(month<10 && i>=10){
+                date = String.valueOf(year)+"-0"+month+"-"+i;
+            }
+            if(month>=10 && i<10){
+                date = String.valueOf(year)+"-"+month+"-0"+i;
+            }
+            if(month>=10 && i>=10){
+                date = String.valueOf(year)+"-"+month+"-"+i;
+            }
+
+            list.add(date);
+        }
+        return list;
     }
 }

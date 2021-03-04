@@ -2,6 +2,8 @@ package com.example.demo.condition;
 
 import com.example.demo.annotation.*;
 import com.example.demo.annotation.mustnot.Filter_Not_Terms;
+import com.example.demo.annotation.should.Filter_Should_Match;
+import com.example.demo.annotation.should.Filter_Should_MatchPhrase;
 import com.example.demo.enums.FormatEnum;
 import com.example.demo.enums.RangeTypeEnum;
 import lombok.AllArgsConstructor;
@@ -34,15 +36,20 @@ public class WaybillReportCondition {
     @Filter_Range(fieldName = "first_time",type= RangeTypeEnum.LTE)
     private String createTimeEnd;
     /**
-     * 网点所属区域
+     * 收货网点所属区域
      */
-    @Filter_Term(fieldName = "arrive_area")
+    @Filter_Should_Match(fieldName = "old_site_area")
     private String networkArea;
+    /**
+     * 取件网点所属区域
+     */
+    @Filter_Should_Match(fieldName = "pickup_site_area")
+    private String pickupSiteArea;
     /**
      * 网点业务类型
      */
-    @Filter_Term(fieldName = "branch_business_type")
-    private String networkBusinessType;
+    @Filter_Term(fieldName = "business_type")
+    private String networkCompany;
     /**
      * 目的网点(接收前端传过来的)
      */

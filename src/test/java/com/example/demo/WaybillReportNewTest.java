@@ -8,6 +8,7 @@ import com.example.demo.condition.*;
 import com.example.demo.constant.CommonDeliveryConstant;
 import com.example.demo.constant.ReportConstant;
 import com.example.demo.dto.IndexOverviewDto;
+import com.example.demo.dto.WaybillReportDto;
 import com.example.demo.dto.WaybillReportOverviewDto;
 import com.example.demo.enums.WaybillReportEnum;
 import com.example.demo.service.EsQueryService;
@@ -68,6 +69,47 @@ public class WaybillReportNewTest {
         waybillReportPageCondition.setPageIndex(1);
         waybillReportPageCondition.setPageSize(2);
         queryWaybillReportPage(waybillReportPageCondition);
+        List<WaybillReportDto> waybillReportDtoList = queryWaybillReportPageNew(waybillReportPageCondition);
+        int pageSize = waybillReportPageCondition.getPageSize();
+        int pageIndex = waybillReportPageCondition.getPageIndex();
+        int pageFrom = ReportUtils.getFrom(pageSize, pageIndex);
+        int pageTo = ReportUtils.getTo(pageSize, pageIndex);
+        //size小于数据长度， 假分页开始
+        if (pageSize < waybillReportDtoList.size()) {
+            if (pageTo <= waybillReportDtoList.size()) {
+                waybillReportDtoList = waybillReportDtoList.subList(pageFrom, pageTo);
+            } else {
+                waybillReportDtoList = waybillReportDtoList.subList(pageFrom, waybillReportDtoList.size());
+            }
+        }
+        List<WaybillReportOverviewDto> waybillReportOverviewDtoList = new ArrayList<>();
+        for (int i = 0; i < waybillReportDtoList.size(); i++) {
+            WaybillReportCondition tempWaybillReportCondition = new WaybillReportCondition();
+            BeanUtils.copyProperties(waybillReportPageCondition, tempWaybillReportCondition);
+            tempWaybillReportCondition.setCreateTimeStart(waybillReportDtoList.get(i).getTime());
+            tempWaybillReportCondition.setCreateTimeEnd(waybillReportDtoList.get(i).getTime());
+
+            WaybillReportOverviewDto waybillReportOverviewDto = getWaybillReportOverviewDto(tempWaybillReportCondition, waybillReportDtoList.get(i).getTime(), waybillReportDtoList.get(i).getKey());
+            waybillReportOverviewDto.setCreateTime(waybillReportDtoList.get(i).getTime());
+            WaybillReportCondition waybillReportCondition1 = new WaybillReportCondition();
+            BeanUtils.copyProperties(tempWaybillReportCondition, waybillReportCondition1);
+            waybillReportCondition1.setCreateTimeStart(waybillReportDtoList.get(i).getTime());
+            waybillReportCondition1.setCreateTimeEnd(waybillReportDtoList.get(i).getTime());
+            List<String> list = new ArrayList<>();
+            list.add(waybillReportDtoList.get(i).getKey());
+            waybillReportCondition1.setTargetNetworkCode(list);
+            //配送量+揽收量
+            String distributionAmount = getDistributionAmountNew(waybillReportCondition1);
+            String collectAmount = getCollectAmountNew(waybillReportCondition1);
+            //运单总量
+            String waybillTotalAmount = String.valueOf(new BigDecimal(distributionAmount).add(new BigDecimal(collectAmount)));
+            waybillReportOverviewDto.setWaybillTotalAmount(waybillTotalAmount);
+            waybillReportOverviewDto.setDistributionAmount(distributionAmount);
+            waybillReportOverviewDto.setCollectAmount(collectAmount);
+            waybillReportOverviewDtoList.add(waybillReportOverviewDto);
+        }
+        waybillReportDtoList.forEach(System.out::println);
+        waybillReportOverviewDtoList.forEach(System.out::println);
     }
 
     /**
@@ -79,6 +121,7 @@ public class WaybillReportNewTest {
         WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
         BeanUtils.copyProperties(waybillReportPageCondition, waybillReportCondition);
         List<WaybillReportOverviewDto> waybillReportOverviewDtoList = new ArrayList<>();
+        List<WaybillReportDto> waybillReportDtoList = new ArrayList<>();
         //获得两个日期（字符串）之间的所有日期
         List<String> datesBetween2Date = DateUtils.getDatesBetween2Date(waybillReportCondition.getCreateTimeStart(), waybillReportCondition.getCreateTimeEnd());
         for (String time : datesBetween2Date) {
@@ -105,6 +148,7 @@ public class WaybillReportNewTest {
                         if (StringUtils.isNotBlank(key)) {
                             log.info("time-----" + time + "---oldSiteId-----" + key + ",---------count-----" + bucket.getDocCount() + ",----aggregation.getBuckets().size-----" + aggregation.getBuckets().size());
                             WaybillReportOverviewDto waybillReportOverviewDto = getWaybillReportOverviewDto(waybillReportCondition, time, key);
+
                             WaybillReportCondition waybillReportCondition1 = new WaybillReportCondition();
                             BeanUtils.copyProperties(waybillReportCondition, waybillReportCondition1);
                             waybillReportCondition1.setCreateTimeStart(time);
@@ -128,6 +172,52 @@ public class WaybillReportNewTest {
         }
 
         waybillReportOverviewDtoList.forEach(System.out::println);
+    }
+
+    /**
+     * 获取运单业务监控报表列表
+     *
+     * @return
+     */
+    public List<WaybillReportDto> queryWaybillReportPageNew(WaybillReportPageCondition waybillReportPageCondition) throws IOException {
+        WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
+        BeanUtils.copyProperties(waybillReportPageCondition, waybillReportCondition);
+        List<WaybillReportOverviewDto> waybillReportOverviewDtoList = new ArrayList<>();
+        List<WaybillReportDto> waybillReportDtoList = new ArrayList<>();
+        //获得两个日期（字符串）之间的所有日期
+        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date(waybillReportCondition.getCreateTimeStart(), waybillReportCondition.getCreateTimeEnd());
+        for (String time : datesBetween2Date) {
+            WaybillReportCondition tempWaybillReportCondition = new WaybillReportCondition();
+            BeanUtils.copyProperties(waybillReportCondition, tempWaybillReportCondition);
+            tempWaybillReportCondition.setCreateTimeStart(time);
+            tempWaybillReportCondition.setCreateTimeEnd(time);
+            log.info("tempWaybillReportCondition---------->" + tempWaybillReportCondition);
+            //根据目的网点分组查询
+            TermsAggregationCondition termsAggregationCondition2 = new TermsAggregationCondition("old_site_id");
+            termsAggregationCondition2.order(CommonDeliveryConstant.FIRST_TIME, false);
+            termsAggregationCondition2.size(ReportConstant.PAGE_MAX_SIZE);
+            SearchSourceBuilder sourceBuilder = QueryBuilder.buildGroup(tempWaybillReportCondition, termsAggregationCondition2);
+            log.info("queryWaybillReportPage ssb------->{}", sourceBuilder);
+
+            SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, sourceBuilder);
+            log.info("queryWaybillReportPage searchResponse------->{}", searchResponse);
+            Map<String, Aggregation> asMap = searchResponse.getAggregations().getAsMap();
+            if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+                ParsedStringTerms aggregation = (ParsedStringTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
+                if (CollectionUtils.isNotEmpty(aggregation.getBuckets())) {
+                    List<WaybillReportDto> finalWaybillReportDtoList = waybillReportDtoList;
+                    aggregation.getBuckets().forEach(bucket -> {
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
+                        if (StringUtils.isNotBlank(key)) {
+                            log.info("time-----" + time + "---oldSiteId-----" + key + ",---------count-----" + bucket.getDocCount() + ",----aggregation.getBuckets().size-----" + aggregation.getBuckets().size());
+                            waybillReportDtoList.add(WaybillReportDto.builder()
+                            .time(time).key(key).build());
+                        }
+                    });
+                }
+            }
+        }
+        return waybillReportDtoList;
     }
 
     private WaybillReportOverviewDto getWaybillReportOverviewDto(WaybillReportCondition waybillReportCondition, String date, String oldSiteId) {
@@ -477,6 +567,17 @@ public class WaybillReportNewTest {
         TermsAggregationCondition termsAggregationCondition = new TermsAggregationCondition("business_type");
         WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
         SearchSourceBuilder ssb = QueryBuilder.buildGroup(waybillReportCondition, termsAggregationCondition);
+        log.info("queryBusinessType ssb------->{}", ssb);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, ssb);
+        log.info("queryBusinessType searchResponse------->{}", searchResponse);
+    }
+
+    @Test
+    public void query(){
+        WaybillReportCondition waybillReportCondition = new WaybillReportCondition();
+        waybillReportCondition.setNetworkArea("拉萨市");
+        waybillReportCondition.setPickupSiteArea("拉萨市");
+        SearchSourceBuilder ssb = QueryBuilder.build(waybillReportCondition);
         log.info("queryBusinessType ssb------->{}", ssb);
         SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(waybillReportMonitorIndex, waybillReportMonitorType, ssb);
         log.info("queryBusinessType searchResponse------->{}", searchResponse);

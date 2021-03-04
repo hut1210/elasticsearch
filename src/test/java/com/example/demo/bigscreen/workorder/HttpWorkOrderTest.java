@@ -1,12 +1,11 @@
-package com.example.demo;
+package com.example.demo.bigscreen.workorder;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.condition.WaybillReportPageCondition;
-import com.example.demo.dto.PostSaleOverviewDto;
-import com.mysql.cj.xdevapi.JsonArray;
+import com.example.demo.condition.WorkBillCondition;
+import com.example.demo.condition.WorkBillPageCondition;
+import com.example.demo.util.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -28,25 +26,20 @@ import java.util.*;
  * @program: dispatch
  * @description:
  **/
-public class HttpCommonDeliveryTest {
+public class HttpWorkOrderTest {
 
     private static final String MAC_NAME = "HmacSHA1";
     private static final String ENCODING = "UTF-8";
-    private final static Logger logger = LoggerFactory.getLogger(HttpCommonDeliveryTest.class);
+    private final static Logger logger = LoggerFactory.getLogger(HttpWorkOrderTest.class);
+    //热点工单top5  区域
+    private static String postAction = "https://uat-proxy.jd.com/XZService/getGroupCount";
+    //指标单量
+    private static String postAction1 = "https://uat-proxy.jd.com/XZService/getBillCount";
+    //工单类型、工单状态
+    private static String postAction2 = "https://uat-proxy.jd.com/XZService/getBillGeneralCount";
+    //工单报表
+    private static String postAction3 = "https://uat-proxy.jd.com/XZService/getBillReport";
 
-    private static String postAction = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryPage";
-
-    private static String postAction1 = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryIndexOverview";
-
-    private static String postAction2 = "https://uat-proxy.jd.com/XZService/queryWaybillReportPage";
-
-    private static String postAction3 = "https://uat-proxy.jd.com/XZService/queryWaybillReportIndexOverview";
-
-    private static String postAction4 = "https://uat-proxy.jd.com/XZService/queryPostSaleEventPage";
-    //postUrl
-    private static String postUrl = new StringBuilder().append(postAction).toString();
-
-    private static String postUrl1 = new StringBuilder().append(postAction1).toString();
     //user (测试环境，线上需提前申请)
     private static String macUser = "lop://403/XZBJ";
     //secret (测试环境，线上需提前申请)
@@ -89,33 +82,70 @@ public class HttpCommonDeliveryTest {
     }
 
     public static void main(String[] args) throws Exception {
-        String qrCode = "{\"createTimeStart\":\"2021-02-17\",\"createTimeEnd\":\"2021-02-24\",\"pageIndex\":1,\"pageSize\":10}";
-        String str="{\"createTimeEnd\":\"2021-03-01\",\"createTimeStart\":\"2021-03-01\",\"networkCode\":\"1455600\",\"networkCompany\":\"1\",\"pageIndex\":1,\"pageSize\":10}";
-        String qrCode1 = "{\"createTimeStart\":\"2021-02-18\",\"createTimeEnd\":\"2021-02-25\"}";
-        String qrCode2 = "{\"createTimeStart\":\"2021-02-18\",\"createTimeEnd\":\"2021-02-25\",\"pageIndex\":1,\"pageSize\":10}";
-        String qrCode4 = "{\"createTime\":\"2021-02-26\",\"pageIndex\":1,\"pageSize\":10}";
+        String qrCode = "{\"createTimeStart\":\"2021-02-28\",\"createTimeEnd\":\"2021-02-28\"}";
+        String param = "{\"workBillCondition\":{\"create_time_end\":\"2021-03-02 23:59:59\",\"create_time_start\":\"2021-02-23 00:00:00\"},{\"groupField\":\"mainid\",\"cardinality\":\"mainid\"}}";
+        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        System.out.println("dateWhitBeforeN="+dateWhitBeforeN);
 
-        WaybillReportPageCondition waybillReportPageCondition = new WaybillReportPageCondition();
-        waybillReportPageCondition.setPageIndex(1);
-        waybillReportPageCondition.setPageSize(10);
-        waybillReportPageCondition.setCreateTimeStart("2021-03-02");
-        waybillReportPageCondition.setCreateTimeEnd("2021-03-02");
-        waybillReportPageCondition.setNetworkArea("拉萨市");
-        String s = doPost(JSONObject.toJSONString(waybillReportPageCondition), postAction2, macUser, macKey);
+        //postAction1
+        WorkBillCondition workBillCondition = new WorkBillCondition();
+        workBillCondition.setCreate_time_start(DateUtils.formatDate(dateWhitBeforeN.get("start"), DateUtils.DATE_FORMAT));
+        workBillCondition.setCreate_time_end(DateUtils.formatDate(dateWhitBeforeN.get("end"), DateUtils.DATE_FORMAT));
+        workBillCondition.setGroupField("mainid");
+        workBillCondition.setCardinality("mainid");
+        workBillCondition.setStatusList(Arrays.asList("20", "60", "80", "100","160","220","180", "200"));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("groupField", "mainid");
+        params.put("cardinality", "mainid");
+
+        List<Object> list = new ArrayList<>();
+        list.add(workBillCondition);
+        list.add(params);
+        System.out.println(JSONObject.toJSONString(list));
+        Map<String, Object> map = new HashMap<>();
+        map.put("workBillCondition", workBillCondition);
+        map.put("params", params);
+        System.out.println(JSONObject.toJSONString(map));
+        System.out.println("workBillCondition = " + JSONObject.toJSONString(workBillCondition));
+
+        //postAction
+        WorkBillCondition workBillCondition2 = new WorkBillCondition();
+        workBillCondition2.setGroupField("locate_attribute_id");
+        workBillCondition2.setCardinality("mainid");
+
+        //postAction2
+        WorkBillCondition workBillCondition3 = new WorkBillCondition();
+        workBillCondition3.setCreate_time_start(DateUtils.formatDate(dateWhitBeforeN.get("start"), DateUtils.DATE_FORMAT));
+        workBillCondition3.setCreate_time_end(DateUtils.formatDate(dateWhitBeforeN.get("end"), DateUtils.DATE_FORMAT));
+        workBillCondition3.setGroupField("work_order_type");
+        workBillCondition3.setCardinality("mainid");
+        workBillCondition3.setWork_order_type("0");
+
+        //postAction2
+        WorkBillCondition workBillCondition4 = new WorkBillCondition();
+        workBillCondition4.setGroupField("status");
+        workBillCondition4.setCardinality("mainid");
+        // 待审核
+        workBillCondition4.setStatus("20");
+        // 待领取
+        workBillCondition4.setStatus("60");
+        // 待回复
+        workBillCondition4.setStatus("80");
+
+        //postAction3
+        Map<String, Date> dateWhitBeforeN1 = DateUtils.getDateWhitBeforeN(0);
+
+        WorkBillPageCondition workBillPageCondition = new WorkBillPageCondition();
+        workBillPageCondition.setCreate_time_start(DateUtils.formatDate(dateWhitBeforeN1.get("start"), DateUtils.DATE_FORMAT) + " 00:00:00");
+        workBillPageCondition.setCreate_time_end(DateUtils.formatDate(dateWhitBeforeN1.get("end"), DateUtils.DATE_FORMAT) + " 23:59:59");
+        workBillPageCondition.setPageIndex(1);
+        workBillPageCondition.setPageSize(10);
+
+        String s = doPost(JSONObject.toJSONString(workBillCondition), postAction1, macUser, macKey);
         System.out.println(JSON.toJSON(s));
-        /*System.out.println(JSON.toJSONString(s));
-        JSONObject jsonObject = JSON.parseObject(s);
-        System.out.println("jsonObject------>"+jsonObject);
-        Object data = jsonObject.get("data");
-        System.out.println("data------>"+data);
-        JSONObject l = JSON.parseObject(JSON.toJSONString(data));
-        JSONArray jsonArray= JSONArray.parseArray(JSON.toJSONString(l.get("rows")));
-        System.out.println("jsonArray------>"+jsonArray);
+        System.out.println(JSON.toJSONString(s));
 
-        JSONArray jsonArray2= l.getJSONArray("rows");
-        System.out.println("jsonArray2------>"+jsonArray2);
-        List<PostSaleOverviewDto> postSaleOverviewDtoList = jsonArray2.toJavaList(PostSaleOverviewDto.class);
-        postSaleOverviewDtoList.forEach(System.out::println);*/
     }
 
     public static String doPost(String param, String url, String macUser, String macKey) {
@@ -128,21 +158,15 @@ public class HttpCommonDeliveryTest {
         //httpClient
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         try {
-            param = new String(param.getBytes("iso-8859-1"),"utf-8");
             //request param
             StringEntity params = new StringEntity(param);
             String xdate = getServerTime();
             String contentMd5 = MD5(param);
             String txt = "X-Date: " + xdate + "\n" + "content-md5: " + contentMd5;
             String sign = HmacSHA1Encrypt(txt, macKey);
-
-            //request
             HttpPost request = new HttpPost(url);
-//            HttpGet request = new HttpGet(url);
-
-
             String auth = "hmac username=\"" + macUser + "\", algorithm=\"hmac-sha1\", headers=\"X-Date content-md5\",signature=\"" + sign + "\"";
-            request.addHeader("content-type", "application/json;charset=UTF-8\"");
+            request.addHeader("content-type", "application/json");
             request.addHeader("X-Date", xdate);
             request.addHeader("content-md5", contentMd5);
             request.addHeader("Authorization", auth);

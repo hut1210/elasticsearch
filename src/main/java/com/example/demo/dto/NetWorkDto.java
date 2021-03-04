@@ -1,6 +1,9 @@
 package com.example.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -10,6 +13,9 @@ import java.io.Serializable;
  * @date 2021/2/23 16:07
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NetWorkDto implements Serializable {
 
     /**
