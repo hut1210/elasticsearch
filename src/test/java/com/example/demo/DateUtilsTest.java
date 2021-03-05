@@ -85,6 +85,17 @@ public class DateUtilsTest {
             map.put(i,getDayByMonth(currentYear,i));
         }
         System.out.println("map = "+ JSON.toJSONString(map));
+
+        String one = "01";
+        String ten = "10";
+        System.out.println(Integer.parseInt(one)+"   "+Integer.parseInt(ten));
+
+        List<String> datesBetween2Date2 = DateUtils.getDatesBetween2Date("2021-02-23 00:00:00", "2021-02-27 23:59:59");
+        System.out.println("#############################");
+        datesBetween2Date2.forEach(System.out::println);
+
+        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        System.out.println(DateUtils.formatDate(dateWhitBeforeN.get("start"),DateUtils.DATE_FORMAT)+"   "+DateUtils.formatDate(dateWhitBeforeN.get("end"),DateUtils.DATE_FORMAT));
     }
 
     public static List<String> getDayByMonth(int yearParam,int monthParam){

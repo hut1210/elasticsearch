@@ -113,6 +113,8 @@ public class HttpWorkOrderTest {
         WorkBillCondition workBillCondition2 = new WorkBillCondition();
         workBillCondition2.setGroupField("locate_attribute_id");
         workBillCondition2.setCardinality("mainid");
+        workBillCondition2.setCreate_time_start("2021-03-02 00:00:00");
+        workBillCondition2.setCreate_time_end("2021-03-02 23:59:59");
 
         //postAction2
         WorkBillCondition workBillCondition3 = new WorkBillCondition();
@@ -142,7 +144,7 @@ public class HttpWorkOrderTest {
         workBillPageCondition.setPageIndex(1);
         workBillPageCondition.setPageSize(10);
 
-        String s = doPost(JSONObject.toJSONString(workBillCondition), postAction1, macUser, macKey);
+        String s = doPost(JSONObject.toJSONString(workBillCondition2), postAction, macUser, macKey);
         System.out.println(JSON.toJSON(s));
         System.out.println(JSON.toJSONString(s));
 

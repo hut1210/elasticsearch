@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.example.demo.constant.ReportConstant;
 import com.example.demo.domain.Option;
 import com.example.demo.dto.CommonDeliveryOverviewDto;
 import com.example.demo.dto.NetWorkDto;
@@ -140,6 +142,13 @@ public class JavaEsTest {
             options1.forEach(item->{
                 System.out.println(item.getCode()+"  "+item.getName());
             });
+
+            TreeMap hourMap = new TreeMap();
+            List<String> hourList = ReportConstant.hourList;
+            for (int i=0;i<hourList.size();i++){
+                hourMap.put(Integer.parseInt(hourList.get(i).trim()),hourList.get(i));
+            }
+            System.out.println(JSON.toJSONString(hourMap));
         }
 
     }
