@@ -4,8 +4,10 @@ package com.example.demo.bigscreen.commondelivery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.condition.CommonDeliveryPageCondition;
 import com.example.demo.condition.WorkBillCondition;
 import com.example.demo.condition.WorkBillPageCondition;
+import com.example.demo.dto.CommonDeliveryDto;
 import com.example.demo.util.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,17 +42,40 @@ public class HttpCommonDeliveryTest {
     private static String postAction2 = "https://uat-proxy.jd.com/XZService/doGetBusinessTypePieChat";
     //共配来源饼图
     private static String postAction3 = "https://uat-proxy.jd.com/XZService/doGetCommonDistributionSourcePieChat";
+    //获取站点数量
+    private static String getSiteCount = "https://uat-proxy.jd.com/XZService/getSiteCount";
+    //全年12个月配送总量
+    private static String getDispatchAnnualInfo = "https://uat-proxy.jd.com/XZService/getDispatchAnnualInfo";
+    //共配地图区域数据
+    private static String getAreaCount = "https://uat-proxy.jd.com/XZService/getAreaCount";
+    //共配地图站点数据
+    private static String getSiteList = "https://uat-proxy.jd.com/XZService/getSiteList";
+    //共配分拣中心数量
+    private static String getSortingCenter = "https://uat-proxy.jd.com/XZService/getSortingCenter";
+    //共配数据汇总
+    private static String getDataSummary = "https://uat-proxy.jd.com/XZService/getDataSummary";
+    //共配近24h配送站点趋势
+    private static String getDispatch24H = "https://uat-proxy.jd.com/XZService/getDispatch24H";
+
+    private static String getCommonDeliveryOverviewDtoList = "https://uat-proxy.jd.com/XZService/getCommonDeliveryOverviewDtoList";
 
     public static void main(String[] args) throws Exception {
-        String qrCode = "{\"createTimeStart\":\"2021-02-28\",\"createTimeEnd\":\"2021-02-28\"}";
-        String param = "{\"workBillCondition\":{\"create_time_end\":\"2021-03-02 23:59:59\",\"create_time_start\":\"2021-02-23 00:00:00\"},{\"groupField\":\"mainid\",\"cardinality\":\"mainid\"}}";
         Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
         System.out.println("dateWhitBeforeN="+dateWhitBeforeN);
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
-        commonDeliveryCondition.setCreateTimeStart("2021-03-04");
-        commonDeliveryCondition.setCreateTimeEnd("2021-03-04");
+        commonDeliveryCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getCurrYearFirst(), DateUtils.DATE_FORMAT));
+        commonDeliveryCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getCurrYearLast(), DateUtils.DATE_FORMAT));
 
-        String s = doPost(JSONObject.toJSONString(commonDeliveryCondition), postAction1, macUser, macKey);
+        List<CommonDeliveryDto> commonDeliveryDtoList = new ArrayList<>();
+        //commonDeliveryDtoList.add(CommonDeliveryDto.builder().key("999").amount("20").build());
+        CommonDeliveryCondition commonDeliveryCondition2 = new CommonDeliveryCondition();
+        commonDeliveryCondition2.setCreateTimeStart("2021-03-10");
+        commonDeliveryCondition2.setCreateTimeEnd("2021-03-10");
+        Map param = new HashMap<>();
+        param.put("commonDeliveryDtoList",commonDeliveryDtoList);
+        param.put("commonDeliveryCondition",commonDeliveryCondition2);
+
+        String s = doPost(JSONObject.toJSONString(param), getCommonDeliveryOverviewDtoList, macUser, macKey);
         System.out.println(JSON.toJSON(s));
         System.out.println(JSON.toJSONString(s));
 

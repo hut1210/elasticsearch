@@ -4,9 +4,16 @@ package com.example.demo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.condition.CommonDeliveryPageCondition;
 import com.example.demo.condition.WaybillReportPageCondition;
+import com.example.demo.dto.CommonDeliveryDto;
+import com.example.demo.dto.CommonDeliveryOverviewDto;
 import com.example.demo.dto.PostSaleOverviewDto;
+import com.example.demo.enums.PostUrlEnum;
+import com.example.demo.util.DateUtils;
 import com.mysql.cj.xdevapi.JsonArray;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -16,6 +23,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -34,19 +43,23 @@ public class HttpCommonDeliveryTest {
     private static final String ENCODING = "UTF-8";
     private final static Logger logger = LoggerFactory.getLogger(HttpCommonDeliveryTest.class);
 
-    private static String postAction = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryPage";
+    private static String queryCommonDeliveryPage = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryPage";
 
-    private static String postAction1 = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryIndexOverview";
+    private static String queryCommonDeliveryPageNew = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryPageNew";
 
-    private static String postAction2 = "https://uat-proxy.jd.com/XZService/queryWaybillReportPage";
+    private static String getCommonDeliveryOverviewDtoList = "https://uat-proxy.jd.com/XZService/getCommonDeliveryOverviewDtoList";
 
-    private static String postAction3 = "https://uat-proxy.jd.com/XZService/queryWaybillReportIndexOverview";
+    private static String queryCommonDeliveryIndexOverview = "https://uat-proxy.jd.com/XZService/queryCommonDeliveryIndexOverview";
 
-    private static String postAction4 = "https://uat-proxy.jd.com/XZService/queryPostSaleEventPage";
+    private static String queryWaybillReportPage = "https://uat-proxy.jd.com/XZService/queryWaybillReportPage";
+
+    private static String queryWaybillReportIndexOverview = "https://uat-proxy.jd.com/XZService/queryWaybillReportIndexOverview";
+
+    private static String queryPostSaleEventPage = "https://uat-proxy.jd.com/XZService/queryPostSaleEventPage";
     //postUrl
-    private static String postUrl = new StringBuilder().append(postAction).toString();
-
-    private static String postUrl1 = new StringBuilder().append(postAction1).toString();
+//    private static String postUrl = new StringBuilder().append(postAction).toString();
+//
+//    private static String postUrl1 = new StringBuilder().append(postAction1).toString();
     //user (测试环境，线上需提前申请)
     private static String macUser = "lop://403/XZBJ";
     //secret (测试环境，线上需提前申请)
@@ -95,14 +108,41 @@ public class HttpCommonDeliveryTest {
         String qrCode2 = "{\"createTimeStart\":\"2021-02-18\",\"createTimeEnd\":\"2021-02-25\",\"pageIndex\":1,\"pageSize\":10}";
         String qrCode4 = "{\"createTime\":\"2021-02-26\",\"pageIndex\":1,\"pageSize\":10}";
 
-        WaybillReportPageCondition waybillReportPageCondition = new WaybillReportPageCondition();
+        /*WaybillReportPageCondition waybillReportPageCondition = new WaybillReportPageCondition();
         waybillReportPageCondition.setPageIndex(1);
-        waybillReportPageCondition.setPageSize(10);
-        waybillReportPageCondition.setCreateTimeStart("2021-03-02");
+        waybillReportPageCondition.setPageSize(10);*/
+        /*waybillReportPageCondition.setCreateTimeStart("2021-03-02");
         waybillReportPageCondition.setCreateTimeEnd("2021-03-02");
-        waybillReportPageCondition.setNetworkArea("拉萨市");
-        String s = doPost(JSONObject.toJSONString(waybillReportPageCondition), postAction2, macUser, macKey);
-        System.out.println(JSON.toJSON(s));
+        waybillReportPageCondition.setNetworkArea("拉萨市");*/
+        CommonDeliveryPageCondition commonDeliveryPageCondition = new CommonDeliveryPageCondition();
+        commonDeliveryPageCondition.setPageIndex(1);
+        commonDeliveryPageCondition.setPageSize(10);
+        commonDeliveryPageCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATE_FORMAT));
+        commonDeliveryPageCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getDateForEnd(new Date(), -1), DateUtils.DATE_FORMAT));
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        BeanUtils.copyProperties(commonDeliveryPageCondition,commonDeliveryCondition);
+        String result = doPost(JSONObject.toJSONString(commonDeliveryPageCondition), queryCommonDeliveryPageNew, macUser, macKey);
+        System.out.println("result = "+JSON.toJSON(result));
+        /*List<CommonDeliveryDto> commonDeliveryDtoList = new ArrayList<>();
+        List<CommonDeliveryOverviewDto> commonDeliveryOverviewDtoList = new ArrayList<>();
+        if (!StringUtils.isEmpty(result)) {
+            try{
+                commonDeliveryDtoList = JSONArray.parseArray(result).toJavaList(CommonDeliveryDto.class);
+                if(CollectionUtils.isNotEmpty(commonDeliveryDtoList)){
+                    Map param = new HashMap<>();
+                    param.put("commonDeliveryDtoList",commonDeliveryDtoList);
+                    param.put("commonDeliveryCondition",commonDeliveryCondition);
+                    String listResult = doPost(JSONObject.toJSONString(param), getCommonDeliveryOverviewDtoList, macUser, macKey);
+                    System.out.println("listResult = "+listResult);
+                    if(!StringUtils.isEmpty(listResult)){
+                        commonDeliveryOverviewDtoList = JSONArray.parseArray(listResult).toJavaList(CommonDeliveryOverviewDto.class);
+                    }
+                }
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+        System.out.println("commonDeliveryOverviewDtoList = "+commonDeliveryOverviewDtoList);*/
         /*System.out.println(JSON.toJSONString(s));
         JSONObject jsonObject = JSON.parseObject(s);
         System.out.println("jsonObject------>"+jsonObject);

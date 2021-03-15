@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.demo.builder.QueryBuilder;
 import com.example.demo.builder.helper.AggregationHelper;
 import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.condition.CommonDeliveryPageCondition;
 import com.example.demo.condition.TermsAggregationCondition;
 import com.example.demo.constant.CommonDeliveryConstant;
 import com.example.demo.constant.ReportConstant;
@@ -37,6 +38,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLOutput;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author huteng5
@@ -157,8 +160,8 @@ public class CommonDeliveryNewTest {
             System.out.println(new BigDecimal("0").compareTo(BigDecimal.ZERO));
             System.out.println(new BigDecimal("0").compareTo(BigDecimal.ZERO));
             System.out.println(new BigDecimal("0").compareTo(BigDecimal.ZERO));
-            System.out.println(ReportUtils.baseDivide(new BigDecimal(String.valueOf(totalTime)),new BigDecimal("2")));
-            System.out.println("totalTime----》"+totalTime);
+            System.out.println(ReportUtils.baseDivide(new BigDecimal(String.valueOf(totalTime)), new BigDecimal("2")));
+            System.out.println("totalTime----》" + totalTime);
         }
     }
 
@@ -639,4 +642,170 @@ public class CommonDeliveryNewTest {
             }
         }
     }
+
+    @Test
+    public void groupList() {
+        List<String> list = new ArrayList(Arrays.asList("1", "2", "3", "4", "5", "6", "7",
+                "8", "9", "10"));
+
+        int listSize = list.size();
+        int toIndex = 3;
+        int keyToken = 0;
+        for (int i = 0; i < list.size(); i += 3) {
+            // 作用为toIndex最后没有100条数据则剩余几条newList中就装几条
+            if (i + 3 > listSize) {
+                toIndex = listSize - i;
+            }
+            List<String> newList = list.subList(i, i + toIndex);
+            System.out.println(newList);
+            for (String n : newList) {
+                System.out.println(n);
+            }
+        }
+    }
+
+    @Test
+    public void testQueryCommonDeliveryPageNew() {
+        CommonDeliveryPageCondition commonDeliveryPageCondition = new CommonDeliveryPageCondition();
+        commonDeliveryPageCondition.setPageSize(1);
+        commonDeliveryPageCondition.setPageSize(10);
+        /*commonDeliveryPageCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATE_FORMAT));
+        commonDeliveryPageCondition.setCreateTimeEnd(DateUtils.formatDate(DateUtils.getDateForEnd(new Date(), -1), DateUtils.DATE_FORMAT));*/
+        queryCommonDeliveryPageNew(commonDeliveryPageCondition);
+    }
+
+    public List<CommonDeliveryOverviewDto> queryCommonDeliveryPageNew(CommonDeliveryPageCondition commonDeliveryPageCondition) {
+
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        BeanUtils.copyProperties(commonDeliveryPageCondition, commonDeliveryCondition);
+        //获取西藏所有网点编号
+        List<String> netWorkList = CommonDeliveryConstant.siteList;
+        commonDeliveryCondition.setTargetNetworkCode(netWorkList);
+        log.info("queryCommonDeliveryPage commonDeliveryPageCondition --->{}，---commonDeliveryCondition---->{}", commonDeliveryPageCondition, commonDeliveryCondition);
+        //1.先按照站点分组查询
+        TermsAggregationCondition condition1 = new TermsAggregationCondition("old_site_id");
+        condition1.cardinality("waybill_code");
+        condition1.size(ReportConstant.PAGE_MAX_SIZE);
+
+        TermsAggregationCondition condition2 = new TermsAggregationCondition("state");
+        condition2.size(ReportConstant.PAGE_MAX_SIZE);
+        SearchSourceBuilder ssb = QueryBuilder.buildGroup(commonDeliveryCondition, condition1, condition2);
+        log.info("queryCommonDeliveryPage ssb --->" + ssb);
+        List<CommonDeliveryOverviewDto> commonDeliveryOverviewDtoList = new ArrayList<>();
+        List list = new ArrayList();
+        try {
+            SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(commonDeliveryMonitorIndex, commonDeliveryMonitorType, ssb);
+            log.info("queryCommonDeliveryPage searchResponse --->" + searchResponse);
+            List<Map<String, String>> maps = ReportUtils.analySearchResponse(searchResponse, condition1, condition2);
+            System.out.println("maps = " + maps);
+            /*list = maps.stream().collect(Collectors.groupingBy(d -> d.get("old_site_id"))).values().stream().map(d -> {
+                Map<String, String> sampleData = d.get(0);
+                Map<String, BigDecimal> map = new HashMap<>();
+                map.put("state_doc_count", d.stream().map(s -> new BigDecimal(s.get("state_doc_count").toString())).reduce(BigDecimal.ZERO, BigDecimal::add));
+                return map;
+            }).collect(Collectors.toList());*/
+            Function<Map<String,String>, String> s = new Function<Map<String,String>, String>() {
+                @Override
+                public String apply(Map<String, String> t) {
+                    String string = t.get("old_site_id");
+                    return string;
+                }
+            };
+            Object collect = maps.stream().collect(Collectors.groupingBy(s));
+
+            Map<Object,List<Map>> result = maps.stream().collect(Collectors.groupingBy(it -> it.get("old_site_id")));
+            System.out.println("result = "+result);
+            for (Object o : result.keySet()) {
+                CommonDeliveryOverviewDto commonDeliveryOverviewDto = new CommonDeliveryOverviewDto();
+                String oldSiteId = o.toString();
+                List<Map> list1 = result.get(oldSiteId);
+                int waybillAmount = list1.stream().mapToInt(b -> Integer.parseInt(String.valueOf(b.get("old_site_id_doc_count")))).sum();
+                //总量
+                commonDeliveryOverviewDto.setWaybillAmount(String.valueOf(waybillAmount));
+                int distributionAmount = 0;
+                int signedInAmount = 0;
+                int cancelAmount = 0;
+                int rejectionAmount = 0;
+                Integer avgDistributionDuration = null;
+                for (Map map : list1) {
+                    if(CommonDeliveryConstant.distributionStatusList.contains(map.get("state"))){
+                        distributionAmount += Integer.parseInt(String.valueOf(map.get("state_doc_count")));
+                    }
+                    if(CommonDeliveryConstant.signedInStatusList.contains(map.get("state"))){
+                        signedInAmount += Integer.parseInt(String.valueOf(map.get("state_doc_count")));
+                    }
+                    if(CommonDeliveryConstant.cancelStatusList.contains(map.get("state"))){
+                        cancelAmount += Integer.parseInt(String.valueOf(map.get("state_doc_count")));
+                    }
+                    if(CommonDeliveryConstant.rejectionStatusList.contains(map.get("state"))){
+                        rejectionAmount += Integer.parseInt(String.valueOf(map.get("state_doc_count")));
+                    }
+                }
+                commonDeliveryOverviewDto.setDistributionAmount(String.valueOf(distributionAmount));
+                commonDeliveryOverviewDto.setSignedInAmount(String.valueOf(signedInAmount));
+                commonDeliveryOverviewDto.setCancelAmount(String.valueOf(cancelAmount));
+                commonDeliveryOverviewDto.setRejectionAmount(String.valueOf(rejectionAmount));
+
+                //分母 配送总量
+                BigDecimal denominator = new BigDecimal(waybillAmount).subtract(new BigDecimal(cancelAmount).add(new BigDecimal(rejectionAmount)));
+                //分子 已签收单量
+                BigDecimal molecule = new BigDecimal(signedInAmount);
+                //计算配送完成率
+                String percent = ReportUtils.toPercent(molecule, denominator);
+
+                commonDeliveryOverviewDto.setDeliveryCompletionRate(percent);
+
+                commonDeliveryOverviewDtoList.add(commonDeliveryOverviewDto);
+            }
+            System.out.println("commonDeliveryOverviewDtoList = "+commonDeliveryOverviewDtoList);
+            System.out.println("分组后:"+result);
+            System.out.println("分组后:"+collect);
+            System.out.println("list = "+list);
+        } catch (Exception e) {
+            throw new RuntimeException("查询异常", e);
+        }
+
+        return commonDeliveryOverviewDtoList;
+    }
+
+    @Test
+    public void fun1() {
+        List<Map<String,Object>> lsl = new ArrayList<>();
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("id", "1");
+        map.put("name", "zhangSan");
+        lsl.add(map);
+
+        Map<String,Object> map2 = new HashMap<>();
+        map2.put("id", "2");
+        map2.put("name", "lisi");
+        lsl.add(map2);
+
+        Map<String,Object> map3 = new HashMap<>();
+        map3.put("id", "1");
+        map3.put("name", "wangwu");
+
+        lsl.add(map3);
+
+        Map<String,Object> map4 = new HashMap<>();
+        map4.put("id", "2");
+        map4.put("name", "zhaoliu");
+
+        lsl.add(map4);
+
+        Map<String, List<Map<String, Object>>> collect = lsl.stream().collect(Collectors.groupingBy(s));
+
+        System.out.println(collect);
+    }
+
+    Function<Map<String,Object>, String>  s = new Function<Map<String,Object>, String>() {
+
+        @Override
+        public String apply(Map<String, Object> t) {
+            Object object = t.get("id");
+            String string = object.toString();
+            return string;
+        }
+    };
 }

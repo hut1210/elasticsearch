@@ -2,10 +2,17 @@ package com.example.demo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.condition.CommonDeliveryPageCondition;
+import com.example.demo.constant.CommonDeliveryConstant;
 import com.example.demo.constant.ReportConstant;
 import com.example.demo.domain.Option;
+import com.example.demo.dto.CommonDeliveryDto;
 import com.example.demo.dto.CommonDeliveryOverviewDto;
 import com.example.demo.dto.NetWorkDto;
+import com.example.demo.util.ReportUtils;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.Before;
@@ -143,14 +150,89 @@ public class JavaEsTest {
                 System.out.println(item.getCode()+"  "+item.getName());
             });
 
-            TreeMap hourMap = new TreeMap();
+            LinkedMap hourMap = new LinkedMap();
             List<String> hourList = ReportConstant.hourList;
             for (int i=0;i<hourList.size();i++){
-                hourMap.put(Integer.parseInt(hourList.get(i).trim()),hourList.get(i));
+                hourMap.put(hourList.get(i).trim(),hourList.get(i));
             }
+            System.out.println("*************hourMap******************");
             System.out.println(JSON.toJSONString(hourMap));
         }
 
+        List<String> list2 = new ArrayList();
+        list2.add("1");
+        list2.add("2");
+        list2.add("3");
+        list2.add("4");
+        list2.add("5");
+        List<String> resultList = new ArrayList<>();
+        try {
+            int pageSize = 2;
+            int pageIndex =4;
+            int pageFrom = ReportUtils.getFrom(pageSize, pageIndex);
+            int pageTo = ReportUtils.getTo(pageSize, pageIndex);
+            if(list2!=null&&!list2.isEmpty()){
+                /*if (pageSize < list2.size()) {
+                    if (pageTo <= list2.size()) {
+                        resultList = list2.subList(pageFrom, pageTo);
+                    } else {
+                        resultList = list2.subList(pageFrom, list2.size());
+                    }
+                }*/
+
+                if(pageFrom>=list2.size()){
+                    System.out.println("pageFrom>=list2.size()");
+                }
+                if(pageTo>=list2.size()){
+                    pageTo=list2.size();
+                }
+                list2 = list2.subList(pageFrom, pageTo);
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("list2 = "+list2);
+        System.out.println("resultList = "+resultList);
+
+        System.out.println("*******************************************");
+        Map<Integer, Long> dispatchAnnualInfo = new HashMap<>();
+        dispatchAnnualInfo.put(3,3631L);
+        System.out.println("dispatchAnnualInfo ="+dispatchAnnualInfo);
+        Map<Integer, Long> result = new HashMap<>();
+        for (int i = 1; i < 13; i++) {
+            result.put(i, dispatchAnnualInfo != null && !dispatchAnnualInfo.isEmpty() && dispatchAnnualInfo.get(i) != null ? dispatchAnnualInfo.get(i) : 0L);
+        }
+        System.out.println(result);
+
+        List<CommonDeliveryDto> commonDeliveryDtoList = new ArrayList<>();
+        commonDeliveryDtoList.add(CommonDeliveryDto.builder().key("999").amount("20").build());
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        commonDeliveryCondition.setCreateTimeStart("2021-03-10");
+        commonDeliveryCondition.setCreateTimeEnd("2021-03-10");
+        Map param = new HashMap<>();
+        param.put("commonDeliveryDtoList",commonDeliveryDtoList);
+        param.put("commonDeliveryCondition",commonDeliveryCondition);
+
+        String jsonStr = " {\"commonDeliveryCondition\":{\"createTimeEnd\":\"2021-03-10\",\"createTimeStart\":\"2021-03-10\"},\"commonDeliveryDtoList\":[{\"amount\":\"20\",\"key\":\"999\"}]}";
+        Map mapTypes = JSON.parseObject(jsonStr);
+        List<CommonDeliveryDto> commonDeliveryDtoList1 = (List<CommonDeliveryDto>) JSONArray.parseArray(mapTypes.get("commonDeliveryDtoList").toString(), CommonDeliveryDto.class);
+        System.out.println((List<CommonDeliveryDto>)mapTypes.get("commonDeliveryDtoList"));
+        System.out.println(commonDeliveryDtoList1);
+        CommonDeliveryCondition myclass = JSONObject.parseObject(mapTypes.get("commonDeliveryCondition").toString() , CommonDeliveryCondition.class);
+        System.out.println(myclass);
+
+        if(CommonDeliveryConstant.distributionStatusList.contains("110")){
+            System.out.println("包含状态");
+        }else{
+            System.out.println("不包含状态");
+        }
+
+        if(CommonDeliveryConstant.distributionStatusList.contains(110)){
+            System.out.println("包含状态");
+        }else{
+            System.out.println("不包含状态");
+        }
     }
 
 
