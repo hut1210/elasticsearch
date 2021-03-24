@@ -214,7 +214,11 @@ public class DateUtils {
 
 
         Calendar end = Calendar.getInstance();
-        end.add(Calendar.DAY_OF_MONTH, 0);
+        if (n > 0) {
+            end.add(Calendar.DAY_OF_MONTH, -1);
+        }else{
+            end.add(Calendar.DAY_OF_MONTH, 0);
+        }
         end.set(Calendar.HOUR_OF_DAY, 23);
         end.set(Calendar.MINUTE, 59);
         end.set(Calendar.SECOND, 59);

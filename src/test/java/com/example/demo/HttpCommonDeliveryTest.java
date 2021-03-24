@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.condition.CommonDeliveryPageCondition;
+import com.example.demo.condition.PostSalePageCondition;
 import com.example.demo.condition.WaybillReportPageCondition;
 import com.example.demo.dto.CommonDeliveryDto;
 import com.example.demo.dto.CommonDeliveryOverviewDto;
@@ -114,7 +115,9 @@ public class HttpCommonDeliveryTest {
         /*waybillReportPageCondition.setCreateTimeStart("2021-03-02");
         waybillReportPageCondition.setCreateTimeEnd("2021-03-02");
         waybillReportPageCondition.setNetworkArea("拉萨市");*/
-        CommonDeliveryPageCondition commonDeliveryPageCondition = new CommonDeliveryPageCondition();
+
+
+        /*CommonDeliveryPageCondition commonDeliveryPageCondition = new CommonDeliveryPageCondition();
         commonDeliveryPageCondition.setPageIndex(1);
         commonDeliveryPageCondition.setPageSize(10);
         commonDeliveryPageCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getDateForBegin(new Date(), -8), DateUtils.DATE_FORMAT));
@@ -122,7 +125,7 @@ public class HttpCommonDeliveryTest {
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
         BeanUtils.copyProperties(commonDeliveryPageCondition,commonDeliveryCondition);
         String result = doPost(JSONObject.toJSONString(commonDeliveryPageCondition), queryCommonDeliveryPageNew, macUser, macKey);
-        System.out.println("result = "+JSON.toJSON(result));
+        System.out.println("result = "+JSON.toJSON(result));*/
         /*List<CommonDeliveryDto> commonDeliveryDtoList = new ArrayList<>();
         List<CommonDeliveryOverviewDto> commonDeliveryOverviewDtoList = new ArrayList<>();
         if (!StringUtils.isEmpty(result)) {
@@ -156,6 +159,22 @@ public class HttpCommonDeliveryTest {
         System.out.println("jsonArray2------>"+jsonArray2);
         List<PostSaleOverviewDto> postSaleOverviewDtoList = jsonArray2.toJavaList(PostSaleOverviewDto.class);
         postSaleOverviewDtoList.forEach(System.out::println);*/
+
+        PostSalePageCondition postSalePageCondition = new PostSalePageCondition();
+        postSalePageCondition.setPageIndex(1);
+        postSalePageCondition.setPageSize(5);
+        String result = doPost(JSONObject.toJSONString(postSalePageCondition), queryPostSaleEventPage, macUser, macKey);
+        if (!StringUtils.isEmpty(result)) {
+            JSONObject jsonObject = JSON.parseObject(result);
+            System.out.println(jsonObject);
+            JSONObject data = JSON.parseObject(JSON.toJSONString(jsonObject.get("data")));
+            System.out.println(data.get("rowTotal"));
+            JSONArray jsonArray = data.getJSONArray("rows");
+            if (jsonArray.size() > 0) {
+                List<PostSaleOverviewDto> postSaleOverviewDtoList = jsonArray.toJavaList(PostSaleOverviewDto.class);
+                postSaleOverviewDtoList.forEach(System.out::println);
+            }
+        }
     }
 
     public static String doPost(String param, String url, String macUser, String macKey) {

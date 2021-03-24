@@ -60,7 +60,8 @@ public class DateUtilsTest {
 
         System.out.println(percent+"    "+percent2);
 
-        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date("2021-02-23", "2021-02-27");
+        List<String> datesBetween2Date = DateUtils.getDatesBetween2Date("2021-03-16", "2021-03-16");
+        System.out.println("datesBetween2Date ==========="+datesBetween2Date);
         List xdataList = new ArrayList<>();
         List seriesList = new ArrayList<>();
         datesBetween2Date.forEach(date->{
@@ -94,7 +95,7 @@ public class DateUtilsTest {
         System.out.println("#############################");
         datesBetween2Date2.forEach(System.out::println);
 
-        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(30);
         System.out.println(DateUtils.formatDate(dateWhitBeforeN.get("start"),DateUtils.DATE_FORMAT)+"   "+DateUtils.formatDate(dateWhitBeforeN.get("end"),DateUtils.DATE_FORMAT));
     }
 

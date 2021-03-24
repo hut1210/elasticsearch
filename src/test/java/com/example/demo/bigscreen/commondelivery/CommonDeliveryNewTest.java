@@ -256,6 +256,13 @@ public class CommonDeliveryNewTest {
         log.info("getSortingCenter ssb = {}", ssb);
         SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(commonDeliveryMonitorIndex, commonDeliveryMonitorType, ssb);
         log.info("getSortingCenter searchResponse = {}", searchResponse);
-        return searchResponse.getHits().getTotalHits().value;
+        Map<String, Aggregation> asMap = searchResponse.getAggregations().getAsMap();
+        if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
+            ParsedStringTerms  teams = (ParsedStringTerms ) asMap.get(AggregationHelper.AGG_GROUP_TERM);
+            if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                return Long.valueOf(teams.getBuckets().size());
+            }
+        }
+        return 0L;
     }
 }

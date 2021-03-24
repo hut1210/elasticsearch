@@ -32,13 +32,13 @@ public class HttpWorkOrderTest {
     private static final String ENCODING = "UTF-8";
     private final static Logger logger = LoggerFactory.getLogger(HttpWorkOrderTest.class);
     //热点工单top5  区域
-    private static String postAction = "https://uat-proxy.jd.com/XZService/getGroupCount";
+    private static String getGroupCount = "https://uat-proxy.jd.com/XZService/getGroupCount";
     //指标单量
-    private static String postAction1 = "https://uat-proxy.jd.com/XZService/getBillCount";
+    private static String getBillCount = "https://uat-proxy.jd.com/XZService/getBillCount";
     //工单类型、工单状态
-    private static String postAction2 = "https://uat-proxy.jd.com/XZService/getBillGeneralCount";
+    private static String getBillGeneralCount = "https://uat-proxy.jd.com/XZService/getBillGeneralCount";
     //工单报表
-    private static String postAction3 = "https://uat-proxy.jd.com/XZService/getBillReport";
+    private static String getBillReport = "https://uat-proxy.jd.com/XZService/getBillReport";
 
     //user (测试环境，线上需提前申请)
     private static String macUser = "lop://403/XZBJ";
@@ -124,8 +124,10 @@ public class HttpWorkOrderTest {
         workBillCondition3.setCardinality("mainid");
         workBillCondition3.setWork_order_type("0");
 
-        //postAction2
+        //getBillGeneralCount
         WorkBillCondition workBillCondition4 = new WorkBillCondition();
+        workBillCondition4.setCreate_time_start("2021-03-17 00:00:00");
+        workBillCondition4.setCreate_time_end("2021-03-17 23:59:59");
         workBillCondition4.setGroupField("status");
         workBillCondition4.setCardinality("mainid");
         // 待审核
@@ -144,7 +146,7 @@ public class HttpWorkOrderTest {
         workBillPageCondition.setPageIndex(1);
         workBillPageCondition.setPageSize(10);
 
-        String s = doPost(JSONObject.toJSONString(workBillCondition2), postAction, macUser, macKey);
+        String s = doPost(JSONObject.toJSONString(workBillCondition4), getBillGeneralCount, macUser, macKey);
         System.out.println(JSON.toJSON(s));
         System.out.println(JSON.toJSONString(s));
 

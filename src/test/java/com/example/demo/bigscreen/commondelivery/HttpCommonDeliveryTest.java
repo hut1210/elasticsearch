@@ -60,7 +60,7 @@ public class HttpCommonDeliveryTest {
     private static String getCommonDeliveryOverviewDtoList = "https://uat-proxy.jd.com/XZService/getCommonDeliveryOverviewDtoList";
 
     public static void main(String[] args) throws Exception {
-        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        /*Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(6);
         System.out.println("dateWhitBeforeN="+dateWhitBeforeN);
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
         commonDeliveryCondition.setCreateTimeStart(DateUtils.formatDate(DateUtils.getCurrYearFirst(), DateUtils.DATE_FORMAT));
@@ -77,7 +77,12 @@ public class HttpCommonDeliveryTest {
 
         String s = doPost(JSONObject.toJSONString(param), getCommonDeliveryOverviewDtoList, macUser, macKey);
         System.out.println(JSON.toJSON(s));
-        System.out.println(JSON.toJSONString(s));
+        System.out.println(JSON.toJSONString(s));*/
+
+        //分拣中心
+        CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
+        String s = doPost(JSONObject.toJSONString(commonDeliveryCondition), getSortingCenter, macUser, macKey);
+        System.out.println(JSON.toJSON(s));
 
     }
 
