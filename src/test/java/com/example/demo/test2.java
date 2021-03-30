@@ -1,7 +1,10 @@
 package com.example.demo;
 
+import com.example.demo.util.DateUtils;
+import com.example.demo.util.ReportUtils;
 import org.checkerframework.checker.units.qual.A;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -82,6 +85,23 @@ public class test2 {
         }
 
         System.out.println(monthMap);
+
+        System.out.println(ReportUtils.getDayCount(new BigDecimal("0"), new BigDecimal("0")));
+
+        System.out.println(ReportUtils.getDayCount(0L, 0L));
+
+        System.out.println("2021-03-11".substring(0, 10));
+
+        Integer i = new Integer(0);
+        if(i instanceof Integer){
+            System.out.println(true);
+        }
+        System.out.println(i==0);
+        System.out.println(i.equals(0));
+
+        Long l = new Long(0);
+        System.out.println(l==0);
+        System.out.println(l.equals(0L));
     }
 }
 
