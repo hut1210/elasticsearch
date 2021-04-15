@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.util.DateUtils;
 import com.example.demo.util.ReportUtils;
+import com.example.demo.util.XZReportUtils;
 import org.checkerframework.checker.units.qual.A;
 
 import java.math.BigDecimal;
@@ -102,6 +103,13 @@ public class test2 {
         Long l = new Long(0);
         System.out.println(l==0);
         System.out.println(l.equals(0L));
+
+        //System.out.println(new BigDecimal("---").compareTo(BigDecimal.ZERO));
+        String linkRelativeRatio = XZReportUtils.getDayCount(new BigDecimal("1"), new BigDecimal("1"));
+        if (!XZReportUtils.isNull(new BigDecimal("1")) && !XZReportUtils.isNull(new BigDecimal("1"))){
+            System.out.println("rise ---- "+(new BigDecimal(linkRelativeRatio).compareTo(BigDecimal.ZERO) > 0 ? 1 : 0));
+        }
+        System.out.println(linkRelativeRatio);
     }
 }
 
