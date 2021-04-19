@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * @author huteng5
@@ -110,6 +111,22 @@ public class test2 {
             System.out.println("rise ---- "+(new BigDecimal(linkRelativeRatio).compareTo(BigDecimal.ZERO) > 0 ? 1 : 0));
         }
         System.out.println(linkRelativeRatio);
+
+        List<Integer> integerList = new ArrayList<>();
+        integerList.add(1);
+        integerList.add(5);
+        integerList.add(3);
+        integerList.add(8);
+        /*integerList.add(2);
+        integerList.add(6);
+        integerList.add(4);
+        integerList.add(7);
+        integerList.add(10);*/
+
+        integerList = integerList.stream().sorted((i1,i2)->i1.compareTo(i2)).collect(Collectors.toList()).subList(0,5);
+        System.out.println(integerList);
+
+
     }
 }
 

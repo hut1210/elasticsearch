@@ -10,6 +10,7 @@ import com.example.demo.condition.WarehouseCondition;
 import com.example.demo.constant.ReportConstant;
 import com.example.demo.dto.*;
 import com.example.demo.service.EsQueryService;
+import com.example.demo.util.DateUtils;
 import com.example.demo.util.RSAUtils;
 import com.example.demo.util.StringUtil;
 import com.example.demo.util.XZReportUtils;
@@ -52,7 +53,7 @@ public class VisualizeTest {
     private static final String type = "_doc";
 
     @Test
-    public void test(){
+    public void test() {
         List<UnCompleteDto> unCompleteDtoList = new ArrayList<>();
         WarehouseCondition condition = new WarehouseCondition();
         condition.setOdoNotInStatus("60000");
@@ -72,7 +73,7 @@ public class VisualizeTest {
             ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
             if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
 
-                for (Terms.Bucket bucket : teams.getBuckets()){
+                for (Terms.Bucket bucket : teams.getBuckets()) {
                     String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
                     if (StringUtils.isNotBlank(key)) {
                         System.out.println("key-----" + key);
@@ -113,7 +114,7 @@ public class VisualizeTest {
         log.info("ssb ----> " + ssb);
         SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder(zq_odo_report_index, type, ssb);
         log.info("searchResponse ----> " + searchResponse);
-        return  searchResponse;
+        return searchResponse;
     }
 
     /**
@@ -163,7 +164,7 @@ public class VisualizeTest {
             ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
             if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
 
-                for (Terms.Bucket bucket : teams.getBuckets()){
+                for (Terms.Bucket bucket : teams.getBuckets()) {
                     String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
                     if (StringUtils.isNotBlank(key)) {
                         System.out.println("key-----" + key);
@@ -436,7 +437,7 @@ public class VisualizeTest {
         completionTrendDtoList.forEach(System.out::println);
     }
 
-    private List<CompletionTrendDto> getCompletionTrend(WarehouseCondition condition){
+    private List<CompletionTrendDto> getCompletionTrend(WarehouseCondition condition) {
 
         List<CompletionTrendDto> completionTrendDtoList = new ArrayList<>();
 
@@ -457,15 +458,15 @@ public class VisualizeTest {
                 "77c1b5e632ece329c67924e05ec76f41720558b1c690fb11e7fd0fa66368cb27e31c2ac425f02401bd9833e002e6e6bcb1bde775b749fdc72905d203b7ba367825255aa459f9e2c2297dc8ee09a13c0403d0a" +
                 "3de0778c9dac2e117cec845e6313de83d7a4255ad502403c2aaa48767c3b898fdbeffa1508a44362bd2effe1fffe215a2171aff13e021757f78602a0d402787a1ccee6fd167cc821d894c106cb3b61a1d4703926291061";
 
-        String pubkey ="30819f300d06092a864886f70d010101050003818d0030818902818100ad7235961483cf1e6b15a61d315de28e80b92bd209641abab738d735490cdff2bb523391efaa92ed9ee743d649752489634572cddad73b2ed6c817d76080" +
+        String pubkey = "30819f300d06092a864886f70d010101050003818d0030818902818100ad7235961483cf1e6b15a61d315de28e80b92bd209641abab738d735490cdff2bb523391efaa92ed9ee743d649752489634572cddad73b2ed6c817d76080" +
                 "d7252420f78f3247cec06151d3a445721601da5ac965bc40384f343f48869e1cdea0dca1529b176adf9258b1110631213a51fe54dc0452bc98d161d653c38afb557b0203010001";
-        System.out.println("prikey === " +prikey);
+        System.out.println("prikey === " + prikey);
         PublicKey publicKey = RSAUtils.getPublicKey(pubkey);
         System.out.println(publicKey);
 
         String content = "{\n" +
                 "\t\"tenantId\": \"SLES002807\",\n" +
-                "\t\"timestamp\": 1617939756254,\n" +
+                "\t\"timestamp\": 1618556400000,\n" +
                 "\t\"warehouseInfo\": [{\n" +
                 "\t\t\"warehouseNo\": \"SWHS0001032212776\",\n" +
                 "\t\t\"warehouseName\": \"电商仓库L\"\n" +
@@ -487,7 +488,7 @@ public class VisualizeTest {
                 "\t}]\n" +
                 "}";
         String token = RSAUtils.encrypt(publicKey, content, "UTF-8");
-        System.out.println("token === "+token);
+        System.out.println("token === " + token);
 
         PrivateKey privateKey = RSAUtils.getPrivateKey(prikey);
         System.out.println(privateKey);
@@ -498,7 +499,7 @@ public class VisualizeTest {
         }*/
 
         String str = RSAUtils.decrypt(privateKey, token, "UTF-8");
-        System.out.println("str ==="+str);
+        System.out.println("str ===" + str);
         JSONObject jsonObject = JSON.parseObject(str);
         String tenantId = jsonObject.getString("tenantId");
         System.out.println(tenantId);
@@ -510,11 +511,12 @@ public class VisualizeTest {
 
         String msg = "{\"code\": 401,\"msg\":\"缺少token\",\"data\":null}";
         JSONObject jsonObject1 = JSON.parseObject(msg);
-        System.out.println(jsonObject1.get("code")+"   "+jsonObject1.get("data"));
+        System.out.println(jsonObject1.get("code") + "   " + jsonObject1.get("data"));
 
-        Long time = System.currentTimeMillis() - new Long(1617939756254L);
-        System.out.println(time.equals(new Long(24*60*60*1000)));
-
+        Long time = 1000000L;
+        System.out.println("time ==" + time);
+        System.out.println(time>new Long(24 * 60 * 60 * 1000));
+        System.out.println(DateUtils.formatDate(new Date(),DateUtils.DATETIME_FORMAT));
     }
 
 }
