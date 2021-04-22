@@ -6,7 +6,9 @@ import com.example.demo.condition.StudentCondition;
 import com.example.demo.condition.TermsAggregationCondition;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.domain.Student;
+import com.example.demo.domain.User;
 import com.example.demo.dto.OwnerAndWarehouseDto;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.util.ReportUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,8 +65,13 @@ class DemoApplicationTests {
     /*@Resource
     private TransportClient transportClient;*/
 
+    @Resource
+    private UserMapper userMapper;
     @Test
     void contextLoads() {
+        System.out.println(userMapper);
+        List<User> users = userMapper.selectList(null);
+        users.forEach(System.out::println);
     }
 
     @Test

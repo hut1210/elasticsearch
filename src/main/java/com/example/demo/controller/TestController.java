@@ -2,20 +2,20 @@ package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.condition.CommonDeliveryCondition;
+import com.example.demo.domain.User;
 import com.example.demo.dto.TestDto;
 import com.example.demo.enums.PostUrlEnum;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.util.DateUtils;
 import com.example.demo.util.HttpUtil;
 import org.mapstruct.ap.shaded.freemarker.template.utility.DateUtil;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +28,9 @@ import java.util.Map;
 public class TestController {
     @Resource
     private HttpUtil httpUtil;
+
+    @Resource
+    private UserMapper userMapper;
     @PostMapping("/index")
     public String index(@RequestBody Map<String, Object> requestMap){
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
@@ -45,5 +48,13 @@ public class TestController {
         map.put("msg","请求成功");
         map.put("data",result);
         return JSONObject.toJSONString(map);
+    }
+
+    @GetMapping("getUserList")
+    public String getUserList(){
+        List<User> users = userMapper.selectList(null);
+        users.forEach(System.out::println);
+
+        return JSONObject.toJSONString(users);
     }
 }

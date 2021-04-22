@@ -466,7 +466,7 @@ public class VisualizeTest {
 
         String content = "{\n" +
                 "\t\"tenantId\": \"SLES002807\",\n" +
-                "\t\"timestamp\": 1618556400000,\n" +
+                "\t\"timestamp\": 1619279999000,\n" +
                 "\t\"warehouseInfo\": [{\n" +
                 "\t\t\"warehouseNo\": \"SWHS0001032212776\",\n" +
                 "\t\t\"warehouseName\": \"电商仓库L\"\n" +
