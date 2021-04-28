@@ -464,7 +464,7 @@ public class VisualizeTest {
         PublicKey publicKey = RSAUtils.getPublicKey(pubkey);
         System.out.println(publicKey);
 
-        String content = "{\n" +
+        /*String content = "{\n" +
                 "\t\"tenantId\": \"SLES002807\",\n" +
                 "\t\"timestamp\": 1619279999000,\n" +
                 "\t\"warehouseInfo\": [{\n" +
@@ -486,6 +486,64 @@ public class VisualizeTest {
                 "\t\t\"warehouseNo\": \"SWHS0001032213688\",\n" +
                 "\t\t\"warehouseName\": \"原油储备仓\"\n" +
                 "\t}]\n" +
+                "}";*/
+        String content = "{\n" +
+                "    \"warehouseInfo\":[\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"22\",\n" +
+                "            \"warehouseNo\":\"22\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"33\",\n" +
+                "            \"warehouseNo\":\"33\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"主数据测试仓库\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032212817\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"测试仓库-赵\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032212891\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"wms联调仓库1\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032212950\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"济南电商储备库\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032212957\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"赛风JWMS仓\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032212988\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"商家车库-测试-zhao\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032213081\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"测试仓库-赵11\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032213103\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"电商L-储备仓\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032213650\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"电商L-国际公司仓\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032213657\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"本地化仓库2\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032216411\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"warehouseName\":\"本地化仓库\",\n" +
+                "            \"warehouseNo\":\"SWHS0001032216439\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"tenantId\":\"SLES002786\",\n" +
+                "    \"timestamp\":1619789376000\n" +
                 "}";
         String token = RSAUtils.encrypt(publicKey, content, "UTF-8");
         System.out.println("token === " + token);

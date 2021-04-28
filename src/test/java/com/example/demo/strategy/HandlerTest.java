@@ -22,7 +22,7 @@ public class HandlerTest {
     @Test
     public void test() throws Exception{
         //准备数据
-        String type = "free";
+        String type = "super";
         //获取任务类型对应的solver
         AbstractHandler processor = chooser.choose(type);
         //调用不同handle的方法进行处理

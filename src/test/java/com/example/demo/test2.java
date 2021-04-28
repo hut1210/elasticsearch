@@ -117,13 +117,13 @@ public class test2 {
         integerList.add(5);
         integerList.add(3);
         integerList.add(8);
-        /*integerList.add(2);
+        integerList.add(2);
         integerList.add(6);
         integerList.add(4);
         integerList.add(7);
-        integerList.add(10);*/
+        integerList.add(10);
 
-        integerList = integerList.stream().sorted((i1,i2)->i1.compareTo(i2)).collect(Collectors.toList()).subList(0,5);
+        integerList = integerList.stream().sorted((i1,i2)->i1.compareTo(i2)).limit(5).collect(Collectors.toList());
         System.out.println(integerList);
 
 
