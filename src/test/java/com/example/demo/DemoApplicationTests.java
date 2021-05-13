@@ -4,11 +4,13 @@ import com.example.demo.builder.helper.AggregationHelper;
 import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.condition.StudentCondition;
 import com.example.demo.condition.TermsAggregationCondition;
+import com.example.demo.constant.ReportConstant;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.domain.Student;
 import com.example.demo.domain.User;
 import com.example.demo.dto.OwnerAndWarehouseDto;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.service.EsQueryService;
 import com.example.demo.util.ReportUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +51,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executor;
 
 @SpringBootTest
 class DemoApplicationTests {
@@ -62,11 +65,18 @@ class DemoApplicationTests {
     @Resource
     private RestHighLevelClient client;
 
+    @Resource(name = "multiplePool")
+    private Executor executor;
+
+    @Resource
+    private EsQueryService esQueryService;
+
     /*@Resource
     private TransportClient transportClient;*/
 
     @Resource
     private UserMapper userMapper;
+
     @Test
     void contextLoads() {
         System.out.println(userMapper);
@@ -75,26 +85,39 @@ class DemoApplicationTests {
     }
 
     @Test
-    void testElasticSearch(){
-        List scores= new ArrayList<>();
+    void testElasticSearch() {
+        List scores = new ArrayList<>();
         scores.add(67.2);
         scores.add(27.2);
         scores.add(56.2);
-        studentRepository.save(new Student(UUID.randomUUID().toString(), "刘伯", 22, scores ));
+        /*studentRepository.save(new Student(UUID.randomUUID().toString(), "刘伯", 22, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "刘思想", 35, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "王皮皮", 45, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "王二丫", 23, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "李四", 22, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "张三", 51, scores ));
-        studentRepository.save(new Student(UUID.randomUUID().toString(), "狗蛋", 23, scores ));
-        studentRepository.save(new Student(UUID.randomUUID().toString(), "铁柱", 45, scores ));
+        studentRepository.save(new Student(UUID.randomUUID().toString(), "狗蛋", 23, scores ));*/
+        Random random = new Random();
+        for (int i = 1200; i < 11000; i++) {
+            studentRepository.save(new Student(UUID.randomUUID().toString(), "铁柱" + i, random.nextInt(100), scores));
+        }
+
     }
 
+    @Test
+    public void testStudent(){
+        StudentCondition condition = new StudentCondition();
+        SearchSourceBuilder searchSourceBuilder = com.example.demo.builder.QueryBuilder.build(condition);
+        searchSourceBuilder.size(ReportConstant.PAGE_MAX_SIZE);
+        System.out.println(searchSourceBuilder);
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder("student_index", "_doc", searchSourceBuilder);
+        System.out.println(searchResponse);
+    }
     @Test
     public void testSimpleQuery() throws IOException {
 
         //不分词查询 参数1： 字段名，参数2：字段查询值，因为不分词，所以汉字只能查询一个字，英语是一个单词.
-        QueryBuilder queryBuilder= QueryBuilders.termsQuery("age",new int[]{21, 22, 23, 35});
+        QueryBuilder queryBuilder = QueryBuilders.termsQuery("age", new int[]{21, 22, 23, 35});
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         nativeSearchQueryBuilder.withQuery(queryBuilder);
 
@@ -110,14 +133,14 @@ class DemoApplicationTests {
         searchRequest.indices("student_index");
         //1.2）构造检索条件
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.query(QueryBuilders.termsQuery("age",new int[]{21, 22, 23, 35}));
-        System.out.println("检索条件："+sourceBuilder);
+        sourceBuilder.query(QueryBuilders.termsQuery("age", new int[]{21, 22, 23, 35}));
+        System.out.println("检索条件：" + sourceBuilder);
         searchRequest.source(sourceBuilder);
         //2. 执行检索
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-        System.out.println("检索结果："+searchResponse);
+        System.out.println("检索结果：" + searchResponse);
         SearchHit[] hits = searchResponse.getHits().getHits();
-        Arrays.asList(hits).forEach(item->{
+        Arrays.asList(hits).forEach(item -> {
             System.out.println(item.toString());
         });
     }
@@ -166,13 +189,13 @@ class DemoApplicationTests {
         System.out.println(searchSourceBuilder);
         System.out.println(searchRequest);
         SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-        System.out.println("response==>"+response);
+        System.out.println("response==>" + response);
         Terms byAgeAggregation = response.getAggregations().get("group_age");
         Map<String, Aggregation> asMap = response.getAggregations().getAsMap();
         System.out.println("--------------------------------");
         List<? extends Terms.Bucket> buckets = byAgeAggregation.getBuckets();
-        for (Terms.Bucket buck: buckets) {
-            System.out.println(buck.getKeyAsString()+"    "+buck.getDocCount());
+        for (Terms.Bucket buck : buckets) {
+            System.out.println(buck.getKeyAsString() + "    " + buck.getDocCount());
         }
     }
 
@@ -198,9 +221,9 @@ class DemoApplicationTests {
         Terms byAgeAggregation = response.getAggregations().get("group_age");
         List<? extends Terms.Bucket> buckets = byAgeAggregation.getBuckets();
         Avg terms2 = null;
-        for (Terms.Bucket buck: buckets) {
+        for (Terms.Bucket buck : buckets) {
             terms2 = buck.getAggregations().get("avg_age");
-            System.out.println(buck.getKeyAsString()+"    "+buck.getDocCount()+" 平均年龄"+terms2.getValue());
+            System.out.println(buck.getKeyAsString() + "    " + buck.getDocCount() + " 平均年龄" + terms2.getValue());
         }
     }
 
@@ -226,9 +249,9 @@ class DemoApplicationTests {
         Terms byAgeAggregation = response.getAggregations().get("group_name");
         List<? extends Terms.Bucket> buckets = byAgeAggregation.getBuckets();
         Avg terms2 = null;
-        for (Terms.Bucket buck: buckets) {
+        for (Terms.Bucket buck : buckets) {
             terms2 = buck.getAggregations().get("avg_age");
-            System.out.println(buck.getKeyAsString()+"    "+buck.getDocCount()+" 平均年龄"+terms2.getValue());
+            System.out.println(buck.getKeyAsString() + "    " + buck.getDocCount() + " 平均年龄" + terms2.getValue());
         }
     }
 
@@ -237,22 +260,22 @@ class DemoApplicationTests {
         StudentCondition condition = new StudentCondition();
         condition.setName("王皮皮");
 
-        QueryBuilders.termQuery("name","王皮皮");
+        QueryBuilders.termQuery("name", "王皮皮");
 
         TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
-        condition1.order("_key",false);
+        condition1.order("_key", false);
 
-        condition1.avg("avgAge","age");
-        condition1.sum("sumAge","age");
-        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1);
-        System.out.println("ssb --->"+ssb);
+        condition1.avg("avgAge", "age");
+        condition1.sum("sumAge", "age");
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition, condition1);
+        System.out.println("ssb --->" + ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-            System.out.println("searchResponse --->"+searchResponse);
-            List<Map<String,String>> list = ReportUtils.analySearchResponse(searchResponse,condition1);
+            System.out.println("searchResponse --->" + searchResponse);
+            List<Map<String, String>> list = ReportUtils.analySearchResponse(searchResponse, condition1);
             System.out.println(list);
         } catch (Exception e) {
             throw new RuntimeException("查询异常", e);
@@ -266,7 +289,7 @@ class DemoApplicationTests {
 
         SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.build(condition);
         //ssb.query(QueryBuilders.termQuery("name","王皮皮"));
-        System.out.println("ssb --->"+ssb);
+        System.out.println("ssb --->" + ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
 
@@ -282,7 +305,7 @@ class DemoApplicationTests {
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-            System.out.println("searchResponse --->"+searchResponse);
+            System.out.println("searchResponse --->" + searchResponse);
         } catch (Exception e) {
             throw new RuntimeException("查询异常", e);
         }
@@ -293,35 +316,35 @@ class DemoApplicationTests {
         StudentCondition condition = new StudentCondition();
         condition.setName("王皮皮");
 
-        QueryBuilders.termQuery("name","王皮皮");
+        QueryBuilders.termQuery("name", "王皮皮");
 
         TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
-        condition1.order("_key",false);
+        condition1.order("_key", false);
 
-        condition1.avg("avgAge","age");
+        condition1.avg("avgAge", "age");
 
         TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
-        condition2.sum("sumAge","age");
+        condition2.sum("sumAge", "age");
 
-        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(),condition1,condition2);
-        System.out.println("ssb --->"+ssb);
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(new StudentCondition(), condition1, condition2);
+        System.out.println("ssb --->" + ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-            System.out.println("searchResponse --->"+searchResponse);
+            System.out.println("searchResponse --->" + searchResponse);
 
-            List<Map<String,String>> list = ReportUtils.analySearchResponse(searchResponse,condition1,condition2);
+            List<Map<String, String>> list = ReportUtils.analySearchResponse(searchResponse, condition1, condition2);
 
             Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
             if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
                 ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
-                if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
                     for (Terms.Bucket bucket : teams.getBuckets()) {
-                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
                         if (StringUtils.isNotBlank(key)) {
-                            System.out.println("key-----"+key);
+                            System.out.println("key-----" + key);
                         }
                     }
                 }
@@ -342,20 +365,20 @@ class DemoApplicationTests {
         list1.add("45");
         condition.setAge(list1);
 
-        QueryBuilders.termQuery("name","王皮皮");
+        QueryBuilders.termQuery("name", "王皮皮");
 
         TermsAggregationCondition condition1 = new TermsAggregationCondition("name");
 
         TermsAggregationCondition condition2 = new TermsAggregationCondition("age");
 
-        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition,condition1,condition2);
-        System.out.println("ssb --->"+ssb);
+        SearchSourceBuilder ssb = com.example.demo.builder.QueryBuilder.buildGroup(condition, condition1, condition2);
+        System.out.println("ssb --->" + ssb);
         SearchRequest searchRequest = new SearchRequest("student_index");
         searchRequest.source(ssb);
 
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-            System.out.println("searchResponse --->"+searchResponse);
+            System.out.println("searchResponse --->" + searchResponse);
             SearchHit[] hits = searchResponse.getHits().getHits();
 
             List<OwnerAndWarehouseDto> list = new ArrayList<>();
@@ -363,20 +386,20 @@ class DemoApplicationTests {
             Map<String, Aggregation> aggMap = searchResponse.getAggregations().getAsMap();
             if (aggMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
                 ParsedStringTerms teams = (ParsedStringTerms) aggMap.get(AggregationHelper.AGG_GROUP_TERM);
-                if(CollectionUtils.isNotEmpty(teams.getBuckets())) {
-                    teams.getBuckets().forEach(bucket->{
-                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString() ;
+                if (CollectionUtils.isNotEmpty(teams.getBuckets())) {
+                    teams.getBuckets().forEach(bucket -> {
+                        String key = bucket.getKey() == null ? "" : bucket.getKey().toString();
                         if (StringUtils.isNotBlank(key)) {
-                            System.out.println("key-----"+key);
+                            System.out.println("key-----" + key);
                         }
                         Map<String, Aggregation> asMap = bucket.getAggregations().getAsMap();
                         if (asMap.containsKey(AggregationHelper.AGG_GROUP_TERM)) {
                             ParsedLongTerms aggregation = (ParsedLongTerms) asMap.get(AggregationHelper.AGG_GROUP_TERM);
-                            if(CollectionUtils.isNotEmpty(aggregation.getBuckets())){
-                                aggregation.getBuckets().forEach(bucket1->{
-                                    String key1 = bucket1.getKey() == null ? "" : bucket1.getKey().toString() ;
+                            if (CollectionUtils.isNotEmpty(aggregation.getBuckets())) {
+                                aggregation.getBuckets().forEach(bucket1 -> {
+                                    String key1 = bucket1.getKey() == null ? "" : bucket1.getKey().toString();
                                     if (StringUtils.isNotBlank(key1)) {
-                                        System.out.println("key1-----"+key1);
+                                        System.out.println("key1-----" + key1);
                                         //组装编号和名称，返回
                                         OwnerAndWarehouseDto ownerAndWarehouseDto = new OwnerAndWarehouseDto();
                                         ownerAndWarehouseDto.setNo(key);
@@ -432,19 +455,19 @@ class DemoApplicationTests {
 
             BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                     .must(QueryBuilders.rangeQuery("age").gte(20).lte(50));
-                    if(1>0){
-                        queryBuilder.must(QueryBuilders.termQuery("age",20));
-                    }
+            if (1 > 0) {
+                queryBuilder.must(QueryBuilders.termQuery("age", 20));
+            }
             sourceBuilder.query(
                     queryBuilder
             );
 
-            System.out.println("sourceBuilder---->"+sourceBuilder);
+            System.out.println("sourceBuilder---->" + sourceBuilder);
             searchRequest.source(sourceBuilder);
             SearchResponse result = client.search(searchRequest, RequestOptions.DEFAULT);
             System.out.println(result);
             Aggregation aggregation = result.getAggregations().get("sumAgg");
-            ParsedStats parsedStats = (ParsedStats)aggregation;
+            ParsedStats parsedStats = (ParsedStats) aggregation;
             System.out.println(parsedStats.getSum());
 
         } catch (Throwable e) {
@@ -454,9 +477,9 @@ class DemoApplicationTests {
 
     @Test
     public void testSuggestCompletionProc() {
-        String suggestField="name";//指定在哪个字段搜索
-        String suggestValue="王二";//输入的信息
-        Integer suggestMaxCount=10;//获得最大suggest条数
+        String suggestField = "name";//指定在哪个字段搜索
+        String suggestValue = "王二";//输入的信息
+        Integer suggestMaxCount = 10;//获得最大suggest条数
 
         CompletionSuggestionBuilder suggestionBuilderDistrict = new CompletionSuggestionBuilder(suggestField).prefix(suggestValue).size(suggestMaxCount);
         SuggestBuilder suggestBuilder = new SuggestBuilder();
@@ -464,10 +487,10 @@ class DemoApplicationTests {
 
         //设置查询builder的index,type,以及建议
         //SearchRequestBuilder requestBuilder = this.elasticsearchRestTemplate..prepareSearch("student_index").setTypes("student").suggest(suggestBuilder);
-        SearchResponse response  =this.elasticsearchRestTemplate.suggest(suggestBuilder,Student.class);
+        SearchResponse response = this.elasticsearchRestTemplate.suggest(suggestBuilder, Student.class);
         //SearchResponse response  =this.elasticsearchRestTemplate.suggest(suggestBuilder,IndexCoordinates.of("student_index"));
 
-        System.out.println("response---->"+response.toString());
+        System.out.println("response---->" + response.toString());
 
         Suggest suggest = response.getSuggest();//suggest实体
 
@@ -498,8 +521,8 @@ class DemoApplicationTests {
 
         List<String> suggests = Arrays.asList(suggestSet.toArray(new String[]{}));
 
-        suggests.forEach((s)->{
-            System.out.println("suggests.forEach--->"+s);
+        suggests.forEach((s) -> {
+            System.out.println("suggests.forEach--->" + s);
         });
 
 //		return	 suggests;

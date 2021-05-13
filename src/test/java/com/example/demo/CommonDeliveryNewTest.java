@@ -808,4 +808,13 @@ public class CommonDeliveryNewTest {
             return string;
         }
     };
+
+    @Test
+    public void query(){
+        SearchSourceBuilder build = QueryBuilder.build(new CommonDeliveryCondition());
+        build.sort("c_id");
+        SearchResponse searchResponse = esQueryService.queryByIndexAndSourceBuilder("waybill_wide_new", commonDeliveryMonitorType, build);
+        System.out.println(searchResponse);
+
+    }
 }
