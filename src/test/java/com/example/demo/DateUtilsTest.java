@@ -5,6 +5,7 @@ import com.example.demo.dto.NetWorkDto;
 import com.example.demo.dto.OptionExtendDto;
 import com.example.demo.dto.WarnRulesDto;
 import com.example.demo.enums.WarnTargetEnum;
+import com.example.demo.util.DateUtil;
 import com.example.demo.util.DateUtils;
 import com.example.demo.util.ReportUtils;
 
@@ -101,6 +102,12 @@ public class DateUtilsTest {
         Date startDate = DateUtils.getDateForBegin(new Date(), -30);
         Date endDate = DateUtils.getDateForEnd(new Date(), 0);
         System.out.println(startDate + "       " + endDate);
+
+        String first = DateUtil.formatDate(DateUtils.getCurrYearFirst(), DateUtil.DATE_FORMAT);
+        String last = DateUtil.formatDate(DateUtils.getCurrYearLast(), DateUtil.DATE_FORMAT);
+        String test = DateUtil.formatDate(DateUtils.getCurrMidYear(), DateUtil.DATE_FORMAT);
+        System.out.println(first+"*****************"+last+"*****************"+test);
+
     }
 
     public static List<String> getDayByMonth(int yearParam, int monthParam) {

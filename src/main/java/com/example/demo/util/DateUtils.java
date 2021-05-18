@@ -300,4 +300,21 @@ public class DateUtils {
 
         return currYearLast;
     }
+
+    public static Date getCurrMidYear(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getMidYear(currentYear);
+    }
+
+    public static Date getMidYear(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, year);
+        calendar.roll(Calendar.MONTH, -7);
+        calendar.roll(Calendar.DAY_OF_MONTH,-1);
+        Date currYearLast = calendar.getTime();
+
+        return currYearLast;
+    }
 }
