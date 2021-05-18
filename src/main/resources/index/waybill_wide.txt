@@ -179,103 +179,97 @@
         "distribute_store_id": {
           "type": "keyword"
         },
-        "source_system":{
+        "source_system": {
           "type": "keyword"
         },
-        "out_wb_no"{
+        "out_wb_no": {
           "type": "keyword"
         },
-        "waybill_type"{
+        "waybill_type": {
           "type": "keyword"
         },
-        "inner_no"{
+        "inner_no": {
           "type": "keyword"
         },
-        "inner_no"{
+        "inner_name": {
           "type": "keyword"
         },
-        "inner_name"{
+        "province_id": {
+          "type": "long"
+        },
+        "province_name": {
           "type": "keyword"
         },
-         "province_id"{
-           "type": "long"
-         },
-       "province_name"{
-         "type": "keyword"
-       },
-         "city_id"{
-           "type": "long"
-         },
-       "city_name"{
-         "type": "keyword"
-       },
+        "city_id": {
+          "type": "long"
+        },
+        "city_name": {
+          "type": "keyword"
+        },
         "received_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-     "cancel_delivery_time": {
-       "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-       "type": "date"
-     },
-      "inspection_time": {
-        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-        "type": "date"
-      },
-       "delivery_time": {
-         "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-         "type": "date"
-       },
-    "closing_time": {
-      "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-      "type": "date"
-    },
-     "unsealed_vehicle_time": {
-       "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-       "type": "date"
-     },
-      "cancel_closing_time": {
-        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-        "type": "date"
-      },
-   "site_unsealed_vehicle_time": {
-     "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-     "type": "date"
-   },
-    "site_closing_time": {
-      "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-      "type": "date"
-    },
-     "site_inspection_time": {
-       "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-       "type": "date"
-     },
-  "site_delivery_time": {
-    "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-    "type": "date"
-  },
-   "receive_time": {
-     "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-     "type": "date"
-   },
+        "cancel_delivery_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "inspection_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "delivery_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "closing_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "unsealed_vehicle_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "cancel_closing_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "site_unsealed_vehicle_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "site_closing_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "site_inspection_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "site_delivery_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "receive_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
         "site_again_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-         "site_collection_time": {
-           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-           "type": "date"
-         },
-      "rejection_time": {
-        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-        "type": "date"
-      },
-       "transfer_time": {
-         "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-         "type": "date"
-       }
-
-
-
+        "site_collection_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "rejection_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "transfer_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        }
       }
     }
   }
