@@ -185,25 +185,40 @@
         "out_wb_no": {
           "type": "keyword"
         },
-        "waybill_type": {
+        "send_network_id": {
           "type": "keyword"
         },
-        "inner_no": {
+        "send_network_name": {
           "type": "keyword"
         },
-        "inner_name": {
+        "send_network_province_id": {
           "type": "keyword"
         },
-        "province_id": {
-          "type": "long"
-        },
-        "province_name": {
+        "send_network_province_name": {
           "type": "keyword"
         },
-        "city_id": {
-          "type": "long"
+        "send_network_city_id": {
+          "type": "keyword"
         },
-        "city_name": {
+        "send_network_city_name": {
+          "type": "keyword"
+        },
+        "receiver_network_id": {
+          "type": "keyword"
+        },
+        "receiver_network_name": {
+          "type": "keyword"
+        },
+        "receiver_network_province_id": {
+          "type": "keyword"
+        },
+        "receiver_network_province_name": {
+          "type": "keyword"
+        },
+        "receiver_network_city_id": {
+          "type": "keyword"
+        },
+        "receiver_network_city_name": {
           "type": "keyword"
         },
         "received_time": {
