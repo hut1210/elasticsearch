@@ -1,5 +1,6 @@
 package com.example.demo.xz;
 
+import com.alibaba.fastjson.JSON;
 import com.example.demo.builder.QueryBuilder;
 import com.example.demo.builder.helper.AggregationHelper;
 import com.example.demo.condition.TermsAggregationCondition;
@@ -47,5 +48,30 @@ public class StockTest {
             Map<String, String> map1 = stringMapMap.get(key);
             System.out.println(map1+"    "+map1.get("warehouse_no")+"    "+map1.get("warehouse_no_doc_count"));
         }
+    }
+
+    @Test
+    public void test2(){
+        Map<String,Map<String,String>> map = new HashMap<>();
+        Map<String,String> temp1 = new HashMap<>();
+        temp1.put("sortingCenterAmount","0");
+        temp1.put("warehouseAmount","0");
+        temp1.put("siteAmount","0");
+        temp1.put("stockAmount","0");
+        temp1.put("waybillAmount","0");
+
+        map.put("拉萨市",temp1);
+
+        Map<String,String> temp2 = new HashMap<>();
+        temp2.put("sortingCenterAmount","0");
+        temp2.put("warehouseAmount","0");
+        temp2.put("siteAmount","0");
+        temp2.put("stockAmount","0");
+        temp2.put("waybillAmount","0");
+
+        map.put("日喀则地区",temp2);
+
+        System.out.println(JSON.toJSONString(map));
+
     }
 }

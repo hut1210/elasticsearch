@@ -10,22 +10,88 @@
         "enabled": false
       },
       "properties": {
-        "busi_name": {
+        "waybill_code": {
           "type": "keyword"
         },
-        "require_start_time": {
-          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-          "type": "date"
-        },
-        "good_weight": {
+        "third_waybill_code": {
           "type": "keyword"
         },
-        "pickup_site_area": {
+        "wb_no": {
+          "type": "keyword"
+        },
+        "c_id": {
           "type": "keyword"
         },
         "first_time_date": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
+        },
+        "first_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "good_number": {
+          "type": "keyword"
+        },
+        "business_type": {
+          "type": "keyword"
+        },
+        "from_province_id": {
+          "type": "keyword"
+        },
+        "from_province_name": {
+          "type": "keyword"
+        },
+        "from_city_id": {
+          "type": "keyword"
+        },
+        "from_city_name": {
+          "type": "keyword"
+        },
+        "from_county_id": {
+          "type": "keyword"
+        },
+        "from_county_name": {
+          "type": "keyword"
+        },
+        "pickup_site_id": {
+          "type": "keyword"
+        },
+        "pickup_site_name": {
+          "type": "keyword"
+        },
+        "pickup_site_area": {
+          "type": "keyword"
+        },
+        "to_province_id": {
+          "type": "keyword"
+        },
+        "to_province_name": {
+          "type": "keyword"
+        },
+        "to_city_id": {
+          "type": "keyword"
+        },
+        "to_city_name": {
+          "type": "keyword"
+        },
+        "old_site_id": {
+          "type": "keyword"
+        },
+        "old_site_name": {
+          "type": "keyword"
+        },
+        "distribute_store_id": {
+          "type": "keyword"
+        },
+        "distribute_store_name": {
+          "type": "keyword"
+        },
+        "store_province_id": {
+          "type": "keyword"
+        },
+        "store_province_name": {
+          "type": "keyword"
         },
         "store_city_name": {
           "type": "keyword"
@@ -33,150 +99,27 @@
         "store_city_id": {
           "type": "keyword"
         },
-        "from_county_name": {
-          "type": "keyword"
-        },
-        "pickup_site_name": {
-          "type": "keyword"
-        },
-        "arrive_area_id": {
-          "type": "keyword"
-        },
-        "first_time": {
-          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-          "type": "date"
-        },
-        "distribute_store_name": {
-          "type": "keyword"
-        },
-        "payment": {
-          "type": "keyword"
-        },
-        "pickup_site_id": {
-          "type": "keyword"
-        },
-        "state": {
-          "type": "keyword"
-        },
-        "from_city_id": {
-          "type": "keyword"
-        },
-        "real_start_time": {
-          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-          "type": "date"
-        },
-        "picking_store_name": {
-          "type": "keyword"
-        },
-        "from_province_name": {
-          "type": "keyword"
-        },
-        "operator_site": {
-          "type": "keyword"
-        },
         "state_create_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "received_money": {
-          "type": "keyword"
-        },
-        "waybill_code": {
-          "type": "keyword"
-        },
-        "good_volume": {
-          "type": "keyword"
-        },
-        "from_province_id": {
-          "type": "keyword"
-        },
-        "store_province_id": {
-          "type": "keyword"
-        },
-        "store_county_id": {
-          "type": "keyword"
-        },
-        "good_number": {
-          "type": "keyword"
-        },
-        "picking_store_id": {
+        "state": {
           "type": "keyword"
         },
         "update_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "third_waybill_code": {
-          "type": "keyword"
-        },
-        "to_county_name": {
-          "type": "keyword"
-        },
-        "business_type": {
-          "type": "keyword"
-        },
-        "c_id": {
-          "type": "keyword"
-        },
-        "from_county_id": {
-          "type": "keyword"
-        },
-        "cod_money": {
-          "type": "keyword"
-        },
-        "distribute_type": {
-          "type": "keyword"
-        },
-        "old_site_id": {
-          "type": "keyword"
-        },
-        "to_county_id": {
-          "type": "keyword"
-        },
-        "from_city_name": {
-          "type": "keyword"
-        },
-        "arrive_area": {
-          "type": "keyword"
-        },
-        "old_site_name": {
-          "type": "keyword"
-        },
-        "store_province_name": {
-          "type": "keyword"
-        },
-        "to_province_name": {
-          "type": "keyword"
-        },
-        "old_site_area": {
-          "type": "keyword"
-        },
         "operator_site_id": {
           "type": "keyword"
         },
-        "to_city_name": {
+        "operator_site": {
           "type": "keyword"
         },
-        "real_start_date": {
-          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
-          "type": "date"
-        },
-        "rel_waybill_code": {
+        "good_volume": {
           "type": "keyword"
         },
-        "to_city_id": {
-          "type": "keyword"
-        },
-        "store_county_name": {
-          "type": "keyword"
-        },
-        "distribution_type": {
-          "type": "keyword"
-        },
-        "to_province_id": {
-          "type": "keyword"
-        },
-        "distribute_store_id": {
+        "good_weight": {
           "type": "keyword"
         },
         "source_system": {
@@ -225,7 +168,7 @@
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "cancel_delivery_time": {
+        "reviewed_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
@@ -249,11 +192,19 @@
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "site_unsealed_vehicle_time": {
+        "car_assigned_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "site_closing_time": {
+        "sign_in_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "picked_up_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "return_to_sign_in_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
@@ -265,7 +216,11 @@
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "receive_time": {
+        "transport_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "arrive_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
@@ -273,7 +228,27 @@
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
-        "site_collection_time": {
+        "dispatch_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "delivered_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "cancel_deliver_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "intercept_success_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "closed_order_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "partial_sign_in_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         },
@@ -282,6 +257,22 @@
           "type": "date"
         },
         "transfer_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "sorter_line_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "transport_line_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "delivery_line_time": {
+          "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
+          "type": "date"
+        },
+        "wayfinish_line_time": {
           "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis",
           "type": "date"
         }
