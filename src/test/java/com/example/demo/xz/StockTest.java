@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,6 +52,35 @@ public class StockTest {
             System.out.println(map1 + "    " + map1.get("warehouse_no") + "    " + map1.get("warehouse_no_doc_count"));
         }
     }
+    @Test
+    public void test1(){
+        List<String> warehouseNoList = new ArrayList<>();
+        warehouseNoList.add("12347");
+        warehouseNoList.add("123456");
+        BigDecimal stockAmount = BigDecimal.ZERO;
+        for (int i = 0; i < warehouseNoList.size(); i++) {
+            WarehouseCondition warehouseCondition = new WarehouseCondition();
+            warehouseCondition.setWarehouseNo(warehouseNoList.get(i));
+            TermsAggregationCondition termsAggregationCondition = new TermsAggregationCondition("warehouse_no");
+            termsAggregationCondition.sum("sumQty", "qty");
+            SearchSourceBuilder ssb = QueryBuilder.buildGroup(warehouseCondition, termsAggregationCondition);
+            log.info("CommonDistributionManager getSiteData ---- ssb = {}", ssb);
+            //查询es内容
+            SearchResponse sr = esQueryService.queryByIndexAndSourceBuilder(wmsStockIndex, wmsStockType, ssb);
+            Map<String, Map<String, String>> stringMap = ReportUtils.analySearchResponse2Map(sr, termsAggregationCondition);
+            BigDecimal tempStockAmount = BigDecimal.ZERO;
+            if (stringMap != null) {
+                for (String key : stringMap.keySet()) {
+                    Map<String, String> map = stringMap.get(key);
+                    System.out.println(map);
+                    BigDecimal amount = map.get("warehouse_no_sumQty") != null ? new BigDecimal(map.get("warehouse_no_sumQty")) : BigDecimal.ZERO;
+                    tempStockAmount = tempStockAmount.add(amount);
+                }
+            }
+            stockAmount = stockAmount.add(tempStockAmount);
+        }
+        System.out.println(stockAmount);
+    }
 
     @Test
     public void test2() {
@@ -82,18 +112,46 @@ public class StockTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         //获取前月的第一天
         for (int i = 0; i < 6; i++) {
+            System.out.println("-----------i:" + i);
             Calendar cal_1 = Calendar.getInstance();//获取当前日期
             cal_1.add(Calendar.MONTH, i - 5);
             cal_1.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天
             String firstDay = format.format(cal_1.getTime());
-            System.out.println("-----1------firstDay:" + firstDay);
+            System.out.println("-----------firstDay:" + firstDay);
             //获取前月的最后一天
             Calendar cale = Calendar.getInstance();
             cale.add(Calendar.MONTH, i - 4);//设置为1号,当前日期既为本月第一天
             cale.set(Calendar.DAY_OF_MONTH, 0);//设置为1号,当前日期既为本月第一天
             String lastDay = format.format(cale.getTime());
-            System.out.println("-----2------lastDay:" + lastDay);
+            System.out.println("-----------lastDay:" + lastDay);
         }
+
+        Calendar cal_1 = Calendar.getInstance();//获取当前日期
+        cal_1.add(Calendar.MONTH,  - 5);
+        cal_1.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天
+        String firstDay = format.format(cal_1.getTime());
+
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);//设置为1号,当前日期既为本月第一天
+        cale.set(Calendar.DAY_OF_MONTH, 0);//设置为1号,当前日期既为本月第一天
+        String lastDay = format.format(cale.getTime());
+        System.out.println(firstDay+"-----------:" + lastDay);
+
+        String substring = "2020-12-01".substring(0, 7);
+        System.out.println(substring);
+
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            //获取当前日期
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, i - 5);
+            //设置为1号,当前日期既为本月第一天
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            String day = format.format(cal.getTime());
+            list.add(day.substring(0,7));
+        }
+        list.forEach(System.out::println);
+
     }
 
     @Test
@@ -234,5 +292,20 @@ public class StockTest {
 
                     return map;
                 }).collect(Collectors.toList());
+    }
+
+    @Test
+    public void test6() throws ParseException {
+        String time = "2021-05-01";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        Date date = sdf.parse(time);
+
+        calendar.setTime(date);
+        int day=calendar.get(Calendar.DATE);
+        //此处修改为+1则是获取后一天，-1则是获取前一天
+        calendar.set(Calendar.DATE,day-1);
+        String lastDay = sdf.format(calendar.getTime());
+        System.out.println(lastDay);
     }
 }

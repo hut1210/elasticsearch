@@ -48,7 +48,7 @@ public class WarnEventListener {
                 @Override
                 public void run() {
                     log.info("准备发送消息给订阅者..." + Thread.currentThread().getName() + "," + item);
-                    if (item.getWarnRulesId() == warnRules.getId()) {
+                    if (item.getWarnRulesId().equals(warnRules.getId())) {
                         //发送信息给订阅人
                         log.info("发送信息给订阅人--->{}---->{}--->{}", Thread.currentThread().getName(), item,warnRules);
                     }

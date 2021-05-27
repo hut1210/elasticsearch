@@ -1,0 +1,296 @@
+drop table soms_report.waybill_wide;
+CREATE TABLE soms_report.`waybill_wide` (
+  `id` varchar(100) NOT NULL COMMENT '主键',
+  `busi_name` varchar(100) DEFAULT NULL,
+  `require_start_time` datetime DEFAULT NULL,
+  `good_weight` varchar(100) DEFAULT NULL,
+  `pickup_site_area` varchar(100) DEFAULT NULL,
+  `first_time_date` varchar(32) DEFAULT NULL,
+  `store_city_name` varchar(100) DEFAULT NULL,
+  `store_city_id` varchar(100) DEFAULT NULL,
+  `from_county_name` varchar(100) DEFAULT NULL,
+  `pickup_site_name` varchar(100) DEFAULT NULL,
+  `arrive_area_id` varchar(100) DEFAULT NULL,
+  `first_time` datetime DEFAULT NULL,
+  `distribute_store_name` varchar(100) DEFAULT NULL,
+  `payment` varchar(100) DEFAULT NULL,
+  `pickup_site_id` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `from_city_id` varchar(100) DEFAULT NULL,
+  `real_start_time` datetime DEFAULT NULL,
+  `picking_store_name` varchar(100) DEFAULT NULL,
+  `from_province_name` varchar(100) DEFAULT NULL,
+  `operator_site` varchar(100) DEFAULT NULL,
+  `state_create_time` datetime DEFAULT NULL,
+  `received_money` varchar(100) DEFAULT NULL,
+  `good_volume` varchar(100) DEFAULT NULL,
+  `from_province_id` varchar(100) DEFAULT NULL,
+  `store_province_id` varchar(100) DEFAULT NULL,
+  `store_county_id` varchar(100) DEFAULT NULL,
+  `good_number` varchar(100) DEFAULT NULL,
+  `picking_store_id` varchar(100) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `third_waybill_code` varchar(100) DEFAULT NULL,
+  `to_county_name` varchar(100) DEFAULT NULL,
+  `business_type` varchar(100) DEFAULT NULL,
+  `c_id` varchar(100) DEFAULT NULL,
+  `from_county_id` varchar(100) DEFAULT NULL,
+  `cod_money` varchar(100) DEFAULT NULL,
+  `distribute_type` varchar(100) DEFAULT NULL,
+  `old_site_id` varchar(100) DEFAULT NULL,
+  `to_county_id` varchar(100) DEFAULT NULL,
+  `from_city_name` varchar(100) DEFAULT NULL,
+  `arrive_area` varchar(100) DEFAULT NULL,
+  `old_site_name` varchar(100) DEFAULT NULL,
+  `store_province_name` varchar(100) DEFAULT NULL,
+  `to_province_name` varchar(100) DEFAULT NULL,
+  `old_site_area` varchar(100) DEFAULT NULL,
+  `operator_site_id` varchar(100) DEFAULT NULL,
+  `to_city_name` varchar(100) DEFAULT NULL,
+  `real_start_date` datetime DEFAULT NULL,
+  `rel_waybill_code` varchar(100) DEFAULT NULL,
+  `to_city_id` varchar(100) DEFAULT NULL,
+  `store_county_name` varchar(100) DEFAULT NULL,
+  `distribution_type` varchar(100) DEFAULT NULL,
+  `to_province_id` varchar(100) DEFAULT NULL,
+  `distribute_store_id` varchar(100) DEFAULT NULL,
+  `ts` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '时间戳',
+  PRIMARY KEY (`id`),
+  KEY `idx_ts` (`ts`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='运单宽表'
+
+drop table soms_report.`waybill_wide_oms`;
+CREATE TABLE soms_report.`waybill_wide_oms` (
+  `id` varchar(100) NOT NULL COMMENT '主键',
+  `wb_no` varchar(200) DEFAULT NULL COMMENT '运单号',
+  `source_system` char(1) DEFAULT NULL COMMENT '运单来源',
+  `c_id` bigint(20)  DEFAULT null COMMENT 'ID',
+  `first_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `first_time_date` varchar(32) DEFAULT NULL,
+  `good_number` varchar(100) DEFAULT NULL,
+  `business_type` char(1) DEFAULT NULL,
+  `from_province_id` varchar(100) DEFAULT NULL,
+  `from_province_name` varchar(100) DEFAULT NULL,
+  `from_city_id` varchar(100) DEFAULT NULL,
+  `from_city_name` varchar(100) DEFAULT NULL,
+  `from_county_id` varchar(100) DEFAULT NULL,
+  `from_county_name` varchar(100) DEFAULT NULL,
+  `pickup_site_id` varchar(100) DEFAULT NULL,
+  `pickup_site_name` varchar(100) DEFAULT NULL,
+  `to_province_id` varchar(100) DEFAULT NULL,
+  `to_province_name` varchar(100) DEFAULT NULL,
+  `to_city_id` varchar(100) DEFAULT NULL,
+  `to_city_name` varchar(100) DEFAULT NULL,
+  `old_site_id` varchar(100) DEFAULT NULL,
+  `old_site_name` varchar(100) DEFAULT NULL,
+  `distribute_store_id` varchar(100) DEFAULT NULL,
+  `distribute_store_name` varchar(100) DEFAULT NULL,
+  `store_province_id` varchar(100) DEFAULT NULL,
+  `store_province_name` varchar(100) DEFAULT NULL,
+  `store_city_name` varchar(100) DEFAULT NULL,
+  `store_city_id` varchar(100) DEFAULT NULL,
+  `state_create_time` datetime DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `operator_site_id` varchar(100) DEFAULT NULL,
+  `operator_site` varchar(100) DEFAULT NULL,
+  `good_volume` varchar(100) DEFAULT NULL,
+  `good_weight` varchar(100) DEFAULT NULL,
+  `send_network_id` varchar(100) DEFAULT NULL,
+  `send_network_name` varchar(100) DEFAULT NULL,
+  `send_network_province_id` varchar(100) DEFAULT NULL,
+  `send_network_province_name` varchar(100) DEFAULT NULL,
+  `send_network_city_id` varchar(100) DEFAULT NULL,
+  `send_network_city_name` varchar(100) DEFAULT NULL,
+  `receiver_network_id` varchar(100) DEFAULT NULL,
+  `receiver_network_name` varchar(100) DEFAULT NULL,
+  `receiver_network_province_id` varchar(100) DEFAULT NULL,
+  `receiver_network_province_name` varchar(100) DEFAULT NULL,
+  `receiver_network_city_id` varchar(100) DEFAULT NULL,
+  `receiver_network_city_name` varchar(100) DEFAULT NULL,
+  `site_city_id` varchar(100) DEFAULT NULL,
+  `site_city_name` varchar(100) DEFAULT NULL,
+  `sorting_city_id` varchar(100) DEFAULT NULL,
+  `sorting_city_name` varchar(100) DEFAULT NULL,
+  `received_time` varchar(100) DEFAULT NULL,
+  `reviewed_time` varchar(100) DEFAULT NULL,
+  `inspection_time` varchar(100) DEFAULT NULL,
+  `delivery_time` varchar(100) DEFAULT NULL,
+  `closing_time` varchar(100) DEFAULT NULL,
+  `unsealed_vehicle_time` varchar(100) DEFAULT NULL,
+  `cancel_closing_time` varchar(100) DEFAULT NULL,
+  `car_assigned_time` varchar(100) DEFAULT NULL,
+  `sign_in_time` varchar(100) DEFAULT NULL,
+  `picked_up_time` varchar(100) DEFAULT NULL,
+  `return_to_sign_in_time` varchar(100) DEFAULT NULL,
+  `site_inspection_time` varchar(100) DEFAULT NULL,
+  `site_delivery_time` varchar(100) DEFAULT NULL,
+  `transport_time` varchar(100) DEFAULT NULL,
+  `arrive_time` varchar(100) DEFAULT NULL,
+  `site_again_time` varchar(100) DEFAULT NULL,
+  `dispatch_time` varchar(100) DEFAULT NULL,
+  `delivered_time` varchar(100) DEFAULT NULL,
+  `cancel_deliver_time` varchar(100) DEFAULT NULL,
+  `intercept_success_time` varchar(100) DEFAULT NULL,
+  `closed_order_time` varchar(100) DEFAULT NULL,
+  `partial_sign_in_time` varchar(100) DEFAULT NULL,
+  `rejection_time` varchar(100) DEFAULT NULL,
+  `transfer_time` varchar(100) DEFAULT NULL,
+  `sorter_line_time` varchar(100) DEFAULT NULL,
+  `transport_line_time` varchar(100) DEFAULT NULL,
+  `delivery_line_time` varchar(100) DEFAULT NULL,
+  `wayfinish_line_time` varchar(100) DEFAULT NULL,
+  `ts` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '时间戳',
+  PRIMARY KEY (`id`),
+  KEY `idx_ts` (`ts`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='OMS运单宽表'
+
+
+drop table soms_report.transport;
+CREATE TABLE soms_report.`transport` (
+  `id` varchar(100) NOT NULL COMMENT '主键',
+  `begin_node_id` varchar(100) DEFAULT NULL,
+  `distance` varchar(100) DEFAULT NULL,
+  `vehicle_job_type` varchar(100) DEFAULT NULL,
+  `transportation_time` varchar(100) DEFAULT NULL,
+  `begin_node_name` varchar(100) DEFAULT NULL,
+  `end_node_id` varchar(100) DEFAULT NULL,
+  `end_city_name` varchar(100) DEFAULT NULL,
+  `carrier_type` varchar(100) DEFAULT NULL,
+  `end_node_type` varchar(100) DEFAULT NULL,
+  `begin_node_type_name` varchar(100) DEFAULT NULL,
+  `end_node_name` varchar(100) DEFAULT NULL,
+  `begin_node_type` varchar(100) DEFAULT NULL,
+  `seal_car_time` varchar(100) DEFAULT NULL,
+  `trans_type` varchar(100) DEFAULT NULL,
+  `begin_node_code` varchar(100) DEFAULT NULL,
+  `trans_way` varchar(100) DEFAULT NULL,
+  `create_time` varchar(100) DEFAULT NULL,
+  `begin_city_name` varchar(100) DEFAULT NULL,
+  `end_city_id` varchar(100) DEFAULT NULL,
+  `arrive_car_time` varchar(100) DEFAULT NULL,
+  `begin_city_id` varchar(100) DEFAULT NULL,
+  `end_node_type_name` varchar(100) DEFAULT NULL,
+  `create_time_date` varchar(100) DEFAULT NULL,
+  `end_node_code` varchar(100) DEFAULT NULL,
+  `update_time` varchar(100) DEFAULT NULL,
+  `ts` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '时间戳',
+  PRIMARY KEY (`id`),
+  KEY `idx_ts` (`ts`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='运输宽表'
+
+DROP table if exists soms_report.xz_network;
+CREATE TABLE soms_report.`xz_network` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `network_code` varchar(20) DEFAULT NULL COMMENT '网点编号',
+  `network_name` varchar(50) DEFAULT NULL COMMENT '网点名称',
+  `network_area` varchar(50) DEFAULT NULL COMMENT '网点所属区域',
+  `network_business_type` char(1) DEFAULT NULL COMMENT '网点业务类型',
+  `detail_address` varchar(100) DEFAULT NULL COMMENT '网点详细地址',
+  `latitude` varchar(50) DEFAULT NULL COMMENT '纬度',
+  `longitude` varchar(50) DEFAULT NULL COMMENT '经度',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `create_user` varchar(100) DEFAULT NULL COMMENT '创建人',
+  `update_user` varchar(100) DEFAULT NULL COMMENT '更新人',
+  `is_delete` tinyint(4) NOT NULL COMMENT '是否删除',
+  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '时间戳',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='西藏网点';
+
+insert into soms_report.xz_network(network_code,network_name,network_area,detail_address,latitude,longitude,create_time,is_delete)
+values("1455600","拉萨纳金营业部","拉萨市","西藏拉萨市城关区江苏大道2号正西方向180米",'29.65165','91.16421',now(),0),
+("1435954","那曲色尼营业部","那曲地区","西藏那曲市色尼区县城内",'31.46988','92.05355',now(),0),
+("1435924","昌都卡若营业部","昌都地区","西藏昌都市卡若区城区",'31.13831','97.18039',now(),0),
+("715146","拉萨柳梧新区营业部","拉萨市","西藏拉萨市柳梧新区云中盛景小区7号门面",'29.62416603','91.08282581',now(),0),
+("572997","日喀则营业部","日喀则地区","西藏自治区日喀则市桑珠孜区雪强北路北郊加油站斜对面19-21号门市",'29.289902','88.876259',now(),0),
+("477079","拉萨东城营业部","拉萨市","西藏拉萨市城关区曲林路热曲组商住楼17和16号门面（西藏大学新校正门前行100米）",'29.647475','91.179504'
+,now(),0),
+("287973","林芝营业部","林芝市","西藏林芝地区巴宜区加丁嘎路工布家苑11#门面",'29.664696','94.370758',
+now(),0),
+("4331","拉萨堆龙营业部","拉萨市","西藏拉萨市堆龙德庆区乃琼镇柳东路与波玛路交叉口保快捷物流总店旁",'29.632479','90.97704'
+,now(),0),
+("999","拉萨赛马场营业部","拉萨市","西藏拉萨市城关区扎基中路11号金色年华酒店院内",'29.673571','91.129837'
+,now(),0),
+("1435974","阿里改则共配站","阿里地区","西藏阿里地区改则县县城内",'32.30455','84.06305'
+,now(),0),
+("1435972","阿里革吉共配站","阿里地区","西藏阿里地区革吉县县城内",'32.39645','81.15106'
+,now(),0),
+("1435970","阿里日土共配站","阿里地区","西藏阿里地区日土县县城内",'33.38747','79.71317'
+,now(),0),
+("1435968","阿里噶尔共配站","阿里地区","西藏阿里地区噶尔县县城内",'32.50028','80.0959'
+,now(),0),
+("1435966","那曲双湖共配站","那曲地区","西藏那曲市双湖县县城内",'33.18763','88.83691'
+,now(),0),
+("1435964","那曲尼玛共配站","那曲地区","西藏那曲市尼玛县县城内",'31.78448','87.23691'
+,now(),0),
+("1435962","那曲巴青共配站","那曲地区","西藏那曲市巴青县县城内",'31.9184','94.05345'
+,now(),0),
+("1435960","那曲申扎共配站","那曲地区","西藏那曲市申扎县县城内",'30.93043','88.70982'
+,now(),0),
+("1435958","那曲安多共配站","那曲地区","西藏那曲市安多县县城内",'32.265','91.68258'
+,now(),0),
+("1435956","那曲聂荣共配站","那曲地区","西藏那曲市聂荣县县城内",'32.10784','92.30327'
+,now(),0),
+("1435952","山南洛扎共配站","山南地区","西藏山南市洛扎县县城内",'28.38569','90.85998'
+,now(),0),
+("1435950","山南措美共配站","山南地区","西藏山南市措美县县城内",'28.43793','91.43361'
+,now(),0),
+("1435948","山南曲松共配站","山南地区","西藏山南市曲松县县城内",'29.06277','92.20222'
+,now(),0),
+("1435946","山南琼结共配站","山南地区","西藏山南市琼结县县城内",'29.02464','91.68385'
+,now(),0),
+("1435944","山南桑日共配站","山南地区","西藏山南市桑日县县城内",'29.25906','92.01579'
+,now(),0),
+("1435942","山南扎囊共配站","山南地区","西藏山南市扎囊县县城内",'29.245','91.33735'
+,now(),0),
+("1435940","林芝察隅共配站","林芝市","西藏林芝市察隅县县城内",'28.66154','97.46687'
+,now(),0),
+("1435938","昌都洛隆共配站","昌都地区","西藏昌都市洛隆县县城内",'30.74181','95.82482'
+,now(),0),
+("1435936","昌都左贡共配站","昌都地区","西藏昌都市左贡县县城内",'29.67091','97.84085'
+,now(),0),
+("1435934","昌都察雅共配站","昌都地区","西藏昌都市察雅县县城内",'30.65363','97.56877'
+,now(),0),
+("1435932","昌都丁青共配站","昌都地区","西藏昌都市丁青县县城内",'31.4125','95.59572'
+,now(),0),
+("1435930","昌都类乌齐共配站","昌都地区","西藏昌都市类乌齐县县城内",'31.21155','96.6002'
+,now(),0),
+("1435928","昌都贡觉共配站","昌都地区","西藏昌都市贡觉县县城内",'30.86016','98.2708'
+,now(),0),
+("1435926","昌都江达共配站","昌都地区","西藏昌都市江达县县城内",'31.49968','98.21822'
+,now(),0),
+("1435922","日喀则岗巴共配站","日喀则地区","西藏日喀则市岗巴县县城内",'28.2746','88.52015'
+,now(),0),
+("1435920","日喀则萨嘎共配站","日喀则地区","西藏日喀则市萨嘎县县城内",'29.32943','85.23421'
+,now(),0),
+("1435914","日喀则吉隆共配站","日喀则地区","西藏日喀则市吉隆县县城内",'28.85254','85.29737'
+,now(),0),
+("1435912","日喀则仲巴共配站","日喀则地区","西藏日喀则市仲巴县县城内",'29.72419','84.02454'
+,now(),0),
+("1435910","日喀则定结共配站","日喀则地区","西藏日喀则市定结县县城内",'28.36408','87.76606'
+,now(),0),
+("1435908","日喀则康马共配站","日喀则地区","西藏日喀则市康马县县城内",'28.55567','89.68169'
+,now(),0),
+("1435906","日喀则仁布共配站","日喀则地区","西藏日喀则市仁布县县城内",'29.23089','89.842'
+,now(),0),
+("1435904","日喀则谢通门共配站","日喀则地区","西藏日喀则市谢通门县县城内",'29.43234','88.26166'
+,now(),0),
+("1434778","日喀则昂仁共配站","日喀则地区","西藏日喀则市昂仁县县城内",'29.29482','87.23617'
+,now(),0),
+("1434776","日喀则拉孜共配站","日喀则地区","西藏日喀则市拉孜县县城内",'29.08164','87.63718'
+,now(),0),
+("1434774","日喀则萨迦共配站","日喀则地区","西藏日喀则市萨迦县县城内",'28.89919','88.02172'
+,now(),0),
+("1434772","日喀则定日共配站","日喀则地区","西藏日喀则市定日县县城内",'28.65874','87.12607'
+,now(),0),
+("1434770","日喀则南木林共配站","日喀则地区","西藏日喀则市南木林县县城内",'29.68224','89.09936'
+,now(),0),
+("1434768","拉萨墨竹工卡共配站","拉萨市","西藏拉萨市墨竹工卡县县城内",'29.83375','91.73065'
+,now(),0),
+("1434766","拉萨当雄共配站","拉萨市","西藏拉萨市当雄县县城内",'30.47192','91.1013'
+,now(),0),
+("1434764","拉萨林周共配站","拉萨市","西藏拉萨市林周县县城内",'29.89469','91.2619'
+,now(),0),
+("1434762","拉萨达孜共配站","拉萨市","西藏拉萨市达孜区城区",'29.66933','91.34979'
+,now(),0);
