@@ -8,7 +8,7 @@ import java.util.*;
 
 public class DateUtils {
 
-    public final   static String FORMAT_DEFALUT = "MM/dd/yyyy";
+    public final static String FORMAT_DEFALUT = "MM/dd/yyyy";
     /**
      * 日期格式yyyy-MM-dd HH:mm:ss字符串常量
      */
@@ -18,36 +18,40 @@ public class DateUtils {
 
     /**
      * 获得当前时间的day天时间。
+     *
      * @param date
      * @param day
      * @return
      */
-    public static Date getDateByDay(Date date , int day){
+    public static Date getDateByDay(Date date, int day) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE,day);
+        cal.add(Calendar.DATE, day);
         return cal.getTime();
     }
 
     /**
      * 获取某时间的小时
+     *
      * @param date
      * @return
      */
-    public static int getHour(Date date){
+    public static int getHour(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.HOUR_OF_DAY);
     }
+
     /**
      * 获得day天的时间的0点0分
+     *
      * @param date
      * @return
      */
-    public static Date getDateForBegin(Date date,int day){
+    public static Date getDateForBegin(Date date, int day) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);					//	将传入的时间设置为所需时间
-        cal.set(Calendar.DATE,cal.get(Calendar.DATE) + day);
+        cal.setTime(date);                    //	将传入的时间设置为所需时间
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE) + day);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -58,13 +62,14 @@ public class DateUtils {
 
     /**
      * 获得day天的时间的23点59分
+     *
      * @param date
      * @return
      */
-    public static Date getDateForEnd(Date date,int day){
+    public static Date getDateForEnd(Date date, int day) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);					//	将传入的时间设置为所需时间
-        cal.set(Calendar.DATE,cal.get(Calendar.DATE) + day);
+        cal.setTime(date);                    //	将传入的时间设置为所需时间
+        cal.set(Calendar.DATE, cal.get(Calendar.DATE) + day);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -77,10 +82,8 @@ public class DateUtils {
     /**
      * 获得两个日期（字符串）之间的所有日期
      *
-     * @param start_date
-     *            String 开始日期 EX：“2012-01-01” 强制输入参数
-     * @param end_date
-     *            String 结束日期 EX：“2012-01-02” 强制输入参数
+     * @param start_date String 开始日期 EX：“2012-01-01” 强制输入参数
+     * @param end_date   String 结束日期 EX：“2012-01-02” 强制输入参数
      * @return
      */
     public static List<String> getDatesBetween2Date(String start_date,
@@ -121,10 +124,8 @@ public class DateUtils {
     /**
      * 功能描述：日期相减
      *
-     * @param date
-     *            Date 日期
-     * @param date1
-     *            Date 日期
+     * @param date  Date 日期
+     * @param date1 Date 日期
      * @return 返回相减后的日期
      */
     public static int diffDate(Date date, Date date1) {
@@ -134,8 +135,7 @@ public class DateUtils {
     /**
      * 功能描述：返回毫秒
      *
-     * @param date
-     *            日期
+     * @param date 日期
      * @return 返回毫秒
      */
     public static long getMillis(Date date) {
@@ -160,10 +160,8 @@ public class DateUtils {
     /**
      * 功能描述：以指定的格式来格式化日期
      *
-     * @param date
-     *            Date 日期
-     * @param format
-     *            String 格式
+     * @param date   Date 日期
+     * @param format String 格式
      * @return String 日期字符串
      */
     public static String formatDate(Date date, String format) {
@@ -182,10 +180,8 @@ public class DateUtils {
     /**
      * 功能描述：格式化日期
      *
-     * @param dateStr
-     *            String 字符型日期
-     * @param format
-     *            String 格式
+     * @param dateStr String 字符型日期
+     * @param format  String 格式
      * @return Date 日期
      */
     public static Date parseDate(String dateStr, String format) {
@@ -216,7 +212,7 @@ public class DateUtils {
         Calendar end = Calendar.getInstance();
         if (n > 0) {
             end.add(Calendar.DAY_OF_MONTH, -1);
-        }else{
+        } else {
             end.add(Calendar.DAY_OF_MONTH, 0);
         }
         end.set(Calendar.HOUR_OF_DAY, 23);
@@ -255,20 +251,22 @@ public class DateUtils {
 
     /**
      * 获取当年的第一天
+     *
      * @return
      */
-    public static Date getCurrYearFirst(){
-        Calendar currCal=Calendar.getInstance();
+    public static Date getCurrYearFirst() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getYearFirst(currentYear);
     }
 
     /**
      * 获取某年第一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public static Date getYearFirst(int year){
+    public static Date getYearFirst(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
@@ -278,20 +276,22 @@ public class DateUtils {
 
     /**
      * 获取当年的最后一天
+     *
      * @return
      */
-    public static Date getCurrYearLast(){
-        Calendar currCal=Calendar.getInstance();
+    public static Date getCurrYearLast() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getYearLast(currentYear);
     }
 
     /**
      * 获取某年最后一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public static Date getYearLast(int year){
+    public static Date getYearLast(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
@@ -301,20 +301,46 @@ public class DateUtils {
         return currYearLast;
     }
 
-    public static Date getCurrMidYear(){
-        Calendar currCal=Calendar.getInstance();
+    public static Date getCurrMidYear() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getMidYear(currentYear);
     }
 
-    public static Date getMidYear(int year){
+    public static Date getMidYear(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
         calendar.roll(Calendar.MONTH, -7);
-        calendar.roll(Calendar.DAY_OF_MONTH,-1);
+        calendar.roll(Calendar.DAY_OF_MONTH, -1);
         Date currYearLast = calendar.getTime();
 
         return currYearLast;
+    }
+
+    /**
+     * 判断时间是否在时间段内
+     *
+     * @param nowTime
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public static boolean isEffectiveDate(Date nowTime, Date startTime, Date endTime) {
+        if (nowTime.getTime() == startTime.getTime()
+                || nowTime.getTime() == endTime.getTime()) {
+            return true;
+        }
+        Calendar date = Calendar.getInstance();
+        date.setTime(nowTime);
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(startTime);
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+        if (date.after(begin) && date.before(end)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

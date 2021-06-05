@@ -10,6 +10,7 @@ import com.example.demo.dto.PieChatDto;
 import com.example.demo.enums.CommonDeliveryEnum;
 import com.example.demo.enums.SourceEnum;
 import com.example.demo.util.DateUtils;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -254,5 +255,31 @@ public class ListTest {
         map.put("xdata", xdataList);
         map.put("series", seriesList);
         return map;
+    }
+
+    @Test
+    public void test2(){
+        List<NetWorkDto> list = new ArrayList<>();
+        list.add(NetWorkDto.builder()
+                .netWorkCode("1455600")
+                .networkArea("拉萨市")
+                .build());
+        list.add(NetWorkDto.builder()
+                .netWorkCode("1435954")
+                .networkArea("那曲地区")
+                .build());
+        list.add(NetWorkDto.builder()
+                .netWorkCode("1435924")
+                .networkArea("昌都地区")
+                .build());
+        list.add(NetWorkDto.builder()
+                .netWorkCode("715146")
+                .networkArea("拉萨市")
+                .build());
+        Map<String,List<NetWorkDto>> networkGroup = list.stream().collect(Collectors.groupingBy(NetWorkDto::getNetworkArea));
+        System.out.println(networkGroup);
+        for (String key:networkGroup.keySet()){
+            System.out.println(networkGroup.get(key));
+        }
     }
 }

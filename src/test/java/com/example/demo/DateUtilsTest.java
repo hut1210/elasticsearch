@@ -97,10 +97,11 @@ public class DateUtilsTest {
         datesBetween2Date2.forEach(System.out::println);
 
         Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(30);
+        System.out.println(dateWhitBeforeN.get("start")+"        "+dateWhitBeforeN.get("end"));
         System.out.println(DateUtils.formatDate(dateWhitBeforeN.get("start"), DateUtils.DATE_FORMAT) + "   " + DateUtils.formatDate(dateWhitBeforeN.get("end"), DateUtils.DATE_FORMAT));
 
         Date startDate = DateUtils.getDateForBegin(new Date(), -30);
-        Date endDate = DateUtils.getDateForEnd(new Date(), 0);
+        Date endDate = DateUtils.getDateForEnd(new Date(), -1);
         System.out.println(startDate + "       " + endDate);
 
         String first = DateUtil.formatDate(DateUtils.getCurrYearFirst(), DateUtil.DATE_FORMAT);
