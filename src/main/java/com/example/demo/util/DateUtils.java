@@ -343,4 +343,30 @@ public class DateUtils {
             return false;
         }
     }
+
+    /**
+     * 近6个月起始和结束时间
+     * @return
+     */
+    public static Map<String,String> getNearly6StartAndEnd(){
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        //获取当前日期
+        Calendar cal1 = Calendar.getInstance();
+        cal1.add(Calendar.MONTH,  - 5);
+        //设置为1号,当前日期既为本月第一天
+        cal1.set(Calendar.DAY_OF_MONTH, 1);
+        String firstDay = format.format(cal1.getTime());
+
+        Calendar cale2 = Calendar.getInstance();
+        //设置为1号,当前日期既为本月第一天
+        cale2.add(Calendar.MONTH, 1);
+        //设置为1号,当前日期既为本月第一天
+        cale2.set(Calendar.DAY_OF_MONTH, 0);
+        String lastDay = format.format(cale2.getTime());
+
+        Map<String,String> map = new HashMap();
+        map.put("start",firstDay);
+        map.put("end",lastDay);
+        return map;
+    }
 }

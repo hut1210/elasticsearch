@@ -573,8 +573,101 @@ public class VisualizeTest {
 
         Long time = 1000000L;
         System.out.println("time ==" + time);
-        System.out.println(time>new Long(24 * 60 * 60 * 1000));
-        System.out.println(DateUtils.formatDate(new Date(),DateUtils.DATETIME_FORMAT));
+        System.out.println(time > new Long(24 * 60 * 60 * 1000));
+        System.out.println(DateUtils.formatDate(new Date(), DateUtils.DATETIME_FORMAT));
     }
 
+    @Test
+    public void test5() {
+        /**
+         * CompleteProgressDto(warehouseNo=SWHS0001032214327, warehouseName=哈密名凯普通仓库, applyQty=7.0, completeQty=7.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032214330, warehouseName=克拉玛依金宝普通仓库, applyQty=7.0, completeQty=7.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032214365, warehouseName=长沙太展普通仓库, applyQty=6.0, completeQty=6.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032214407, warehouseName=玛纳斯博瑞通普通仓库, applyQty=10.0, completeQty=10.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032217430, warehouseName=哈尔滨集瑞普通仓库, applyQty=15.0, completeQty=15.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032217743, warehouseName=杭州冶金普通仓库, applyQty=8.0, completeQty=8.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032217853, warehouseName=和田顺迎万里普通仓库, applyQty=11.0, completeQty=11.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032218943, warehouseName=永昌新星普通仓库, applyQty=10.0, completeQty=10.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032219483, warehouseName=德州鑫永旭普通仓库, applyQty=6.0, completeQty=6.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032220719, warehouseName=湘乡祥成普通仓库, applyQty=5.0, completeQty=5.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032220909, warehouseName=益阳恒盛普通仓库, applyQty=9.0, completeQty=9.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032221447, warehouseName=韩城启盛普通仓库, applyQty=9.0, completeQty=9.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222202, warehouseName=玉门腾达普通仓库, applyQty=20.0, completeQty=20.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222483, warehouseName=邢台资易普通仓库, applyQty=10.0, completeQty=10.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222508, warehouseName=周口永昌普通仓库, applyQty=8.0, completeQty=8.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222521, warehouseName=兴安盟盛达普通仓库, applyQty=9.0, completeQty=9.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222574, warehouseName=乌市光通普通仓库, applyQty=14.0, completeQty=14.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222736, warehouseName=格尔木虹达普通仓库, applyQty=16.0, completeQty=16.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222771, warehouseName=常州瑞祥普通仓库, applyQty=12.0, completeQty=12.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032222809, warehouseName=北京世政普通仓库, applyQty=6.0, completeQty=6.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032223603, warehouseName=廊坊贵仁普通仓库, applyQty=8.0, completeQty=8.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032223721, warehouseName=丹东永达普通仓库, applyQty=14.0, completeQty=14.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032223763, warehouseName=衡水万翔普通仓库, applyQty=7.0, completeQty=7.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032223867, warehouseName=高安桃源普通仓库, applyQty=11.0, completeQty=11.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032224093, warehouseName=岚县新浩泽普通仓库, applyQty=8.0, completeQty=8.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032224245, warehouseName=盂县晋田普通仓库, applyQty=9.0, completeQty=9.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032224669, warehouseName=枣庄众鑫普通仓库, applyQty=15.0, completeQty=15.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032194331, warehouseName=中国石化普通库, applyQty=5880.0, completeQty=0.0, percent=null),
+         * CompleteProgressDto(warehouseNo=SWHS0001032198438, warehouseName=达州鑫辉普通仓库, applyQty=11.0, completeQty=11.0, percent=100.00),
+         * CompleteProgressDto(warehouseNo=SWHS0001032198641, warehouseName=昆明长顺达普通仓库, applyQty=15.0, completeQty=15.0, percent=100.00)
+         */
+        List<CompleteProgressDto> completeProgressDtoList = new ArrayList<>();
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032214327")
+                .warehouseNo("哈密名凯普通仓库")
+                .applyQty(7.0)
+                .completeQty(7.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032214330")
+                .warehouseNo("克拉玛依金宝普通仓库")
+                .applyQty(7.0)
+                .completeQty(7.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032214365")
+                .warehouseNo("长沙太展普通仓库")
+                .applyQty(6.0)
+                .completeQty(6.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032214407")
+                .warehouseNo("玛纳斯博瑞通普通仓库")
+                .applyQty(10.0)
+                .completeQty(10.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032217430")
+                .warehouseNo("哈尔滨集瑞普通仓库")
+                .applyQty(15.0)
+                .completeQty(15.0)
+                .percent("90.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032217743")
+                .warehouseNo("杭州冶金普通仓库")
+                .applyQty(13.0)
+                .completeQty(13.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList.add(CompleteProgressDto.builder()
+                .warehouseName("SWHS0001032217853")
+                .warehouseNo("和田顺迎万里普通仓库")
+                .applyQty(14.0)
+                .completeQty(14.0)
+                .percent("100.00")
+                .build());
+        completeProgressDtoList = completeProgressDtoList.stream().filter(x -> x!=null&&x.getPercent()!=null).collect(Collectors.toList());
+        completeProgressDtoList = completeProgressDtoList.stream().sorted(Comparator.comparing(CompleteProgressDto::getCompleteQty).reversed())
+                .sorted((s1, s2) -> new BigDecimal(s2.getPercent()).compareTo(new BigDecimal(s1.getPercent())))
+                .limit(5).collect(Collectors.toList());
+        System.out.println(new ArrayList<>(completeProgressDtoList));
+        /*List<CompleteProgressDto> collect = completeProgressDtoList.stream().sorted(Comparator.comparing(s -> s.getPercent(), Comparator.nullsLast(String::compareTo))).limit(5).collect(Collectors.toList());
+        System.out.println(new ArrayList<>(collect));*/
+
+    }
 }

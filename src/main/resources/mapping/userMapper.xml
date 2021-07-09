@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.demo.domain.User">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="age" jdbcType="VARCHAR" property="age" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+    </resultMap>
+
+    <insert id="saveUser" parameterType="com.example.demo.domain.User">
+        insert into user (
+            id,
+            name,
+            age,
+            email
+        )values (
+            #{user.id},
+            #{user.name},
+            #{user.age},
+            #{user.email}
+        )
+        ON DUPLICATE KEY update
+            id=VALUES(id)
+            <if test="user!=null and user.name!=null and user.name!=''">
+                ,name = VALUES(name)
+            </if>
+            <if test="user!=null and user.age!=null">
+                ,age = VALUES(age)
+            </if>
+            <if test="user!=null and user.email!=null and user.email!=''">
+                ,email = VALUES(email)
+            </if>
+    </insert>
+
+    <insert id="saveUserList" parameterType="com.example.demo.domain.User">
+        insert into user (
+        id,
+        name,
+        age,
+        email
+        )values
+    <foreach collection="userList" item="user" separator=",">
+        (
+        #{user.id},
+        #{user.name},
+        #{user.age},
+        #{user.email}
+        )
+        ON DUPLICATE KEY update
+        id=VALUES(id)
+        <if test="user!=null and user.name!=null and user.name!=''">
+            ,name = VALUES(name)
+        </if>
+        <if test="user!=null and user.age!=null">
+            ,age = VALUES(age)
+        </if>
+        <if test="user!=null and user.email!=null and user.email!=''">
+            ,email = VALUES(email)
+        </if>
+    </foreach>
+
+    </insert>
+
+</mapper>

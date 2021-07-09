@@ -2,7 +2,10 @@ package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.domain.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author huteng5
@@ -14,4 +17,12 @@ import org.springframework.stereotype.Repository;
 public interface UserMapper extends BaseMapper<User> {
 // 所有的CRUD操作都已经编写完成了
 // 你不需要像以前的配置一大堆文件了！
+
+    /**
+     * 保存用户
+     * @param user
+     */
+    void saveUser(@Param("user") User user);
+
+    void saveUserList(@Param("userList") List<User> user);
 }

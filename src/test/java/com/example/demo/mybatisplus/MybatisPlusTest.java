@@ -12,10 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author huteng5
@@ -221,5 +218,24 @@ public class MybatisPlusTest {
         wrapper.orderByDesc("id");
         List<User> users = userMapper.selectList(wrapper);
         users.forEach(System.out::println);
+    }
+
+    @Test
+    public void insertUser(){
+        User user = new User();
+        // 通过条件自动拼接动态sql
+        user.setId(111L);
+        user.setName("test2");
+        userMapper.saveUser(user);
+    }
+
+    @Test
+    public void insertUserList(){
+        User user = new User();
+        // 通过条件自动拼接动态sql
+        user.setId(111L);
+        user.setName("test3");
+        List<User> list =  new ArrayList<>();
+        userMapper.saveUserList(list);
     }
 }
