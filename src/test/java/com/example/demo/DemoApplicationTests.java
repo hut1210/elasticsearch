@@ -98,8 +98,8 @@ class DemoApplicationTests {
         studentRepository.save(new Student(UUID.randomUUID().toString(), "张三", 51, scores ));
         studentRepository.save(new Student(UUID.randomUUID().toString(), "狗蛋", 23, scores ));*/
         Random random = new Random();
-        for (int i = 1200; i < 11000; i++) {
-            studentRepository.save(new Student(UUID.randomUUID().toString(), "铁柱" + i, random.nextInt(100), scores));
+        for (int i = 21011; i < 31010; i++) {
+            studentRepository.save(new Student(UUID.randomUUID().toString(), "王五" + i, random.nextInt(100), scores));
         }
 
     }

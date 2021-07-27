@@ -7,14 +7,15 @@ import com.example.demo.service.EsQueryService;
 import com.example.demo.util.ReportUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -83,5 +84,82 @@ public class EsQueryServiceImpl implements EsQueryService {
     public List<Map<String, String>> queryByGroup(String index, String type, String query, TermsAggregationCondition... conditions) {
         SearchResponse sr = this.queryByIndexAndQuery(index,type,query);
         return ReportUtils.analySearchResponse(sr,conditions);
+    }
+
+    /**
+     * 查询es内容
+     *
+     * @param indexs        索引
+     * @param types         type
+     * @param sourceBuilder 查询条件
+     * @param isScroll      是否开启滚动查询，如开启使用完成后需调用
+     * @return
+     */
+    @Override
+    public SearchResponse query(String[] indexs, String[] types, SearchSourceBuilder sourceBuilder, boolean isScroll) {
+
+        if (indexs == null || indexs.length < 1) {
+            throw new RuntimeException("查询es索引不能为空");
+        }
+
+        if (types == null || types.length < 1) {
+            throw new RuntimeException("查询es type不能为空");
+        }
+
+        SearchRequest searchRequest = new SearchRequest(indexs);
+        searchRequest.types(types);
+        searchRequest.source(sourceBuilder);
+        if (isScroll) {
+            searchRequest.scroll(TimeValue.timeValueMinutes(2L));
+        }
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            return searchResponse;
+        } catch (Exception e) {
+            log.error("查询es出现异常", e);
+            throw new RuntimeException("查询异常", e);
+        }
+    }
+
+    /**
+     * 滚动查询
+     *
+     * @param scrollId
+     * @return
+     */
+    @Override
+    public SearchResponse scroll(String scrollId) {
+
+        SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
+        scrollRequest.scroll(TimeValue.timeValueMinutes(2L));
+
+        try {
+            SearchResponse searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
+            return searchResponse;
+        } catch (IOException e) {
+            log.error("滚动查询异常,{}", scrollId, e);
+            throw new RuntimeException("滚动查询异常", e);
+        }
+    }
+
+    /**
+     * 清除滚动标识
+     *
+     * @param scrollId
+     * @return
+     */
+    @Override
+    public ClearScrollResponse ClearScrollRequest(String scrollId) {
+        ClearScrollRequest request = new ClearScrollRequest();
+        request.addScrollId(scrollId);
+        try {
+            ClearScrollResponse response = client.clearScroll(request, RequestOptions.DEFAULT);
+            return response;
+        } catch (IOException e) {
+            log.error("清除滚动标识异常,{}", scrollId, e);
+            throw new RuntimeException("清除滚动标识异常", e);
+        }
+
     }
 }

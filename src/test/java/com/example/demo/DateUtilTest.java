@@ -20,7 +20,7 @@ public class DateUtilTest {
 
         System.out.println(DateUtils.getNearly6StartAndEnd().get("start") + "  " + DateUtils.getNearly6StartAndEnd().get("end"));
         System.out.println(DateUtils.getDateForEnd(DateUtils.parseDate(DateUtils.getNearly6StartAndEnd().get("start"), DateUtils.DATE_FORMAT),0));
-        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(0);
+        Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(60);
         System.out.println(dateWhitBeforeN.get("start")+"   "+dateWhitBeforeN.get("end"));
 
         System.out.println(DateUtils.getDateForBegin(new Date(),0)+" "+DateUtils.getDateForEnd(new Date(),0));
