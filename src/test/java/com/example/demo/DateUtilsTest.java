@@ -72,7 +72,7 @@ public class DateUtilsTest {
         seriesList.forEach(System.out::println);
         System.out.println("***************************************");
         xdataList.forEach(System.out::println);
-
+        System.out.println("当年第一天 = " + DateUtils.getCurrYearFirst() + "   " + DateUtils.getDateForEnd(new Date(), 0));
         System.out.println("当年第一天 = " + DateUtils.formatDate(DateUtils.getCurrYearFirst(), DateUtils.DATE_FORMAT));
 
         String date = "2021-02-25";
@@ -97,8 +97,12 @@ public class DateUtilsTest {
         datesBetween2Date2.forEach(System.out::println);
 
         Map<String, Date> dateWhitBeforeN = DateUtils.getDateWhitBeforeN(30);
-        System.out.println(dateWhitBeforeN.get("start")+"        "+dateWhitBeforeN.get("end"));
+        System.out.println(dateWhitBeforeN.get("start") + "        " + dateWhitBeforeN.get("end"));
         System.out.println(DateUtils.formatDate(dateWhitBeforeN.get("start"), DateUtils.DATE_FORMAT) + "   " + DateUtils.formatDate(dateWhitBeforeN.get("end"), DateUtils.DATE_FORMAT));
+
+        Map<String, Date> dateWhitBeforeN2 = DateUtils.getDateWhitBeforeN(1);
+        System.out.println("dateWhitBeforeN2====" + dateWhitBeforeN2.get("start") + "        " + dateWhitBeforeN2.get("end"));
+        System.out.println("dateWhitBeforeN2====" + DateUtils.formatDate(dateWhitBeforeN2.get("start"), DateUtils.DATE_FORMAT) + "   " + DateUtils.formatDate(dateWhitBeforeN2.get("end"), DateUtils.DATE_FORMAT));
 
         Date startDate = DateUtils.getDateForBegin(new Date(), -30);
         Date endDate = DateUtils.getDateForEnd(new Date(), -1);
@@ -107,7 +111,20 @@ public class DateUtilsTest {
         String first = DateUtil.formatDate(DateUtils.getCurrYearFirst(), DateUtil.DATE_FORMAT);
         String last = DateUtil.formatDate(DateUtils.getCurrYearLast(), DateUtil.DATE_FORMAT);
         String test = DateUtil.formatDate(DateUtils.getCurrMidYear(), DateUtil.DATE_FORMAT);
-        System.out.println(first+"*****************"+last+"*****************"+test);
+        System.out.println(first + "*****************" + last + "*****************" + test);
+
+        Date start = DateUtils.getDateForBegin(DateUtils.parseDate(DateUtils.getNearly6StartAndEnd().get("start"), DateUtils.DATE_FORMAT), 0);
+        Date end = DateUtils.getDateForEnd(DateUtils.parseDate(DateUtils.getNearly6StartAndEnd().get("end"), DateUtils.DATE_FORMAT), 0);
+        System.out.println(start + "*****************" + end);
+
+        List<String> nearly6Months = DateUtils.getNearly6Months();
+        System.out.println(nearly6Months.toString());
+
+        String start1 = DateUtils.getNearly6StartAndEnd().get("start");
+        String end1 = DateUtils.getNearly6StartAndEnd().get("end");
+        System.out.println(start1 + "*****************" + end1);
+        List<Map> months = DateUtils.getMonths(start1, end1);
+        System.out.println(months);
 
     }
 

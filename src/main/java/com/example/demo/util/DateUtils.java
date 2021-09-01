@@ -2,6 +2,7 @@ package com.example.demo.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -346,13 +347,14 @@ public class DateUtils {
 
     /**
      * 近6个月起始和结束时间
+     *
      * @return
      */
-    public static Map<String,String> getNearly6StartAndEnd(){
+    public static Map<String, String> getNearly6StartAndEnd() {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         //获取当前日期
         Calendar cal1 = Calendar.getInstance();
-        cal1.add(Calendar.MONTH,  - 5);
+        cal1.add(Calendar.MONTH, -5);
         //设置为1号,当前日期既为本月第一天
         cal1.set(Calendar.DAY_OF_MONTH, 1);
         String firstDay = format.format(cal1.getTime());
@@ -364,9 +366,106 @@ public class DateUtils {
         cale2.set(Calendar.DAY_OF_MONTH, 0);
         String lastDay = format.format(cale2.getTime());
 
-        Map<String,String> map = new HashMap();
-        map.put("start",firstDay);
-        map.put("end",lastDay);
+        Map<String, String> map = new HashMap();
+        map.put("start", firstDay);
+        map.put("end", lastDay);
         return map;
+    }
+
+    /**
+     * 近6个月月份第一天、最后一天
+     *
+     * @return
+     */
+    public static List getNearly6Months() {
+        List list = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        for (int i = 0; i < 6; i++) {
+            Map map = new HashMap();
+            //获取当前日期
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, i - 5);
+            //设置为1号,当前日期既为本月第一天
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            String day = format.format(cal.getTime());
+
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.MONTH, i - 5);
+            //设置为1号,当前日期既为本月第一天
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            //设置为当月最后一天
+            c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+            //将小时至23
+            c.set(Calendar.HOUR_OF_DAY, 23);
+            //将分钟至59
+            c.set(Calendar.MINUTE, 59);
+            //将秒至59
+            c.set(Calendar.SECOND, 59);
+            //将毫秒至999
+            c.set(Calendar.MILLISECOND, 999);
+            String day2 = format.format(c.getTime());
+            map.put("month", day.substring(0, 7));
+            map.put("first", day.substring(0, 10) + " 00:00:00");
+            map.put("last", day2.substring(0, 10) + " 23:59:59");
+            list.add(map);
+        }
+        return list;
+    }
+
+    /***
+     * 获取两个时间段的年份-月份/月第一天/月最后一天
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public static List<Map> getMonths(String startTime, String endTime) {
+        List<Map> res = new ArrayList<Map>();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateFormat dateFormat3 = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date start = dateFormat.parse(startTime);
+            Date end = dateFormat.parse(endTime);
+            Calendar tempStart = Calendar.getInstance();
+            tempStart.setTime(start);
+            Calendar tempEnd = Calendar.getInstance();
+            tempEnd.setTime(end);
+            tempEnd.add(Calendar.MONTH, 1);// 日期加1(包含结束)
+            while (tempStart.before(tempEnd)) {
+                String month = dateFormat.format(tempStart.getTime());
+                tempStart.set(Calendar.DAY_OF_MONTH, 1);
+                String first = dateFormat3.format(tempStart.getTime());
+                tempStart.set(Calendar.DAY_OF_MONTH, tempStart.getActualMaximum(Calendar.DAY_OF_MONTH));
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("month", month);
+                map.put("first", first + " 00:00:00");
+                map.put("last", first + " 23:59:59");
+                res.add(map);
+                tempStart.add(Calendar.MONTH, 1);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public static String getMonthEnd(String time) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = simpleDateFormat.parse(time);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        //设置为当月最后一天
+        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        //将小时至23
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        //将分钟至59
+        c.set(Calendar.MINUTE, 59);
+        //将秒至59
+        c.set(Calendar.SECOND, 59);
+        //将毫秒至999
+        c.set(Calendar.MILLISECOND, 999);
+        // 获取本月最后一天的时间
+        return simpleDateFormat.format(c.getTime());
+
     }
 }
