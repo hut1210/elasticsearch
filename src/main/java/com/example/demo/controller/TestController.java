@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.apiversion.annotation.ApiVersion;
 import com.example.demo.condition.CommonDeliveryCondition;
 import com.example.demo.domain.User;
 import com.example.demo.dto.TestDto;
@@ -52,6 +53,27 @@ public class TestController {
 
     @GetMapping("getUserList")
     public String getUserList(){
+        System.out.println("当前是1.0版本");
+        List<User> users = userMapper.selectList(null);
+        users.forEach(System.out::println);
+
+        return JSONObject.toJSONString(users);
+    }
+
+    @GetMapping("getUserList")
+    @ApiVersion(2.0)
+    public String getUserList2(){
+        System.out.println("当前是2.0版本");
+        List<User> users = userMapper.selectList(null);
+        users.forEach(System.out::println);
+
+        return JSONObject.toJSONString(users);
+    }
+
+    @PostMapping("getUserList")
+    @ApiVersion(3.0)
+    public String getUserList3(){
+        System.out.println("当前是3.0版本");
         List<User> users = userMapper.selectList(null);
         users.forEach(System.out::println);
 

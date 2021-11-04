@@ -23,6 +23,19 @@ public class BeanUtilsTest {
          */
         List<Student> students = new ArrayList<>();
         BeanUtils.copyProperties(studentList,students);
-        System.out.println("students--->"+students.size());
+        System.out.println("studentList--->"+studentList);
+        System.out.println("students--->"+students);
+
+        PackGroupCondition condition1 = new PackGroupCondition();
+        List<String> warehouseNoList = new ArrayList<>();
+        warehouseNoList.add("1");
+        warehouseNoList.add("2");
+        warehouseNoList.add("3");
+        condition1.setWarehouseNoList(warehouseNoList);
+
+        PackGroupCondition condition2 = new PackGroupCondition();
+        BeanUtils.copyProperties(condition1,condition2);
+        System.out.println(condition1);
+        System.out.println(condition2);
     }
 }
