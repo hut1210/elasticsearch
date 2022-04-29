@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 测试接口
  * @author huteng5
  * @version 1.0
  * @date 2021/2/7 11:53
@@ -32,6 +33,12 @@ public class TestController {
 
     @Resource
     private UserMapper userMapper;
+
+    /**
+     * 测试
+     * @param requestMap
+     * @return
+     */
     @PostMapping("/index")
     public String index(@RequestBody Map<String, Object> requestMap){
         CommonDeliveryCondition commonDeliveryCondition = new CommonDeliveryCondition();
@@ -51,6 +58,10 @@ public class TestController {
         return JSONObject.toJSONString(map);
     }
 
+    /**
+     * 获取用户列表版本1.0
+     * @return
+     */
     @GetMapping("getUserList")
     public String getUserList(){
         System.out.println("当前是1.0版本");
@@ -60,7 +71,11 @@ public class TestController {
         return JSONObject.toJSONString(users);
     }
 
-    @GetMapping("getUserList")
+    /**
+     * 获取用户列表版本2.0
+     * @return
+     */
+   /* @GetMapping("getUserList")
     @ApiVersion(2.0)
     public String getUserList2(){
         System.out.println("当前是2.0版本");
@@ -68,9 +83,13 @@ public class TestController {
         users.forEach(System.out::println);
 
         return JSONObject.toJSONString(users);
-    }
+    }*/
 
-    @PostMapping("getUserList")
+    /**
+     * 获取用户列表版本3.0
+     * @return
+     */
+    /*@PostMapping("getUserList")
     @ApiVersion(3.0)
     public String getUserList3(){
         System.out.println("当前是3.0版本");
@@ -78,5 +97,5 @@ public class TestController {
         users.forEach(System.out::println);
 
         return JSONObject.toJSONString(users);
-    }
+    }*/
 }

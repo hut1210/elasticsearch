@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-@EnableApiVersion
+//@EnableApiVersion
 public class DemoApplication {
 
     public static void main(String[] args) {

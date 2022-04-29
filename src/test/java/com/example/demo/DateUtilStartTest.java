@@ -1,7 +1,7 @@
 package com.example.demo;
 
 
-import com.jd.soms.util.DateUtil;
+//import com.jd.soms.util.DateUtil;
 
 import java.util.Date;
 
@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class DateUtilStartTest {
     public static void main(String[] args) {
-        System.out.println(DateUtil.getCurrMidYear());
+        //System.out.println(DateUtil.getCurrMidYear());
+        System.out.println("8" + String.format("%08d", 8342));
     }
 }

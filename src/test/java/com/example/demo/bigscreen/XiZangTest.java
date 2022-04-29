@@ -51,14 +51,15 @@ public class XiZangTest {
         WorkBillCondition workBillCondition = new WorkBillCondition();
         workBillCondition.setCreate_time_start(DateUtils.formatDate(dateWhitBeforeN.get("start"), DateUtils.DATE_FORMAT) + " 00:00:00");
         workBillCondition.setCreate_time_end(DateUtils.formatDate(dateWhitBeforeN.get("end"), DateUtils.DATE_FORMAT) + " 23:59:59");
-
+        workBillCondition.setCreate_time_start("2021-12-10");
+        workBillCondition.setCreate_time_end("2021-12-10");
         Map<String, String> params = new HashMap<>();
         params.put("groupField", "mainid");
         params.put("cardinality", "mainid");
 
         //workBillCondition.setTargetNetworkCode(CommonDeliveryConstant.siteList);
         // 待处理
-        workBillCondition.setStatusList(Arrays.asList("20", "60", "80", "100", "180", "200"));
+        //workBillCondition.setStatusList(Arrays.asList("20", "60", "80", "100", "180", "200"));
         Long pending = getBillCountNew(workBillCondition);
 
         // 已处理
@@ -176,7 +177,7 @@ public class XiZangTest {
 
     public ParsedStringTerms getAggregation(WorkBillCondition tempWorkBillCondition) {
         TermsAggregationCondition condition1 = new TermsAggregationCondition("mainid");
-        condition1.cardinality("mainid");
+        //condition1.cardinality("mainid");
         condition1.size(ReportConstant.PAGE_MAX_SIZE);
         condition1.order("_count", false);
         SearchSourceBuilder ssb = QueryBuilder.buildGroup(tempWorkBillCondition, condition1);
