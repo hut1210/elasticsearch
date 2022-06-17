@@ -1,7 +1,10 @@
 package com.example.demo;
 
+import com.example.demo.dto.SalesItemDto;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author huteng5
@@ -27,6 +30,18 @@ public class Demo {
 
         Integer num = demo.getListFisrt(nums);
         System.out.println(num);
+
+        List<SalesItemDto> list = new ArrayList<>();
+        SalesItemDto salesItemDto = new SalesItemDto();
+        salesItemDto.setSpShopGoodsNo("1234");
+        list.add(salesItemDto);
+
+        SalesItemDto salesItemDto1 = new SalesItemDto();
+        salesItemDto1.setSpShopGoodsNo("1111");
+        list.add(salesItemDto1);
+
+        String collect = list.stream().map(SalesItemDto::getSpShopGoodsNo).collect(Collectors.joining(","));
+        System.out.println(collect);
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.Date;
  * @date 2021/4/19 11:49
  */
 @Slf4j
-@Component // 一定不要忘记把处理器加到IOC容器中！
+//@Component // 一定不要忘记把处理器加到IOC容器中！
 public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {

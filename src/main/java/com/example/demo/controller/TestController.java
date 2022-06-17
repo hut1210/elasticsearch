@@ -9,11 +9,18 @@ import com.example.demo.enums.PostUrlEnum;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.util.DateUtils;
 import com.example.demo.util.HttpUtil;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.mapstruct.ap.shaded.freemarker.template.utility.DateUtil;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -98,4 +105,43 @@ public class TestController {
 
         return JSONObject.toJSONString(users);
     }*/
+
+    @Resource
+    private ResourceLoader resourceLoader;
+
+    @GetMapping("/download")
+    public void download(HttpServletResponse response) {
+        InputStream inputStream = null;
+        ServletOutputStream servletOutputStream = null;
+        try {
+            String filename = "批量导入订单.xlsx";
+            String path = "templates/批量导入订单.xlsx";
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:"+path);
+
+            response.setContentType("application/vnd.ms-excel");
+            response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.addHeader("charset", "utf-8");
+            response.addHeader("Pragma", "no-cache");
+            String encodeName = URLEncoder.encode(filename, StandardCharsets.UTF_8.toString());
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodeName + "\"; filename*=utf-8''" + encodeName);
+
+            inputStream = resource.getInputStream();
+            servletOutputStream = response.getOutputStream();
+            IOUtils.copy(inputStream, servletOutputStream);
+            response.flushBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (servletOutputStream != null) {
+                    servletOutputStream.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -184,7 +184,7 @@ public class MybatisPlusTest {
         // 查询年龄在 20 ~ 30 岁之间的用户
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.between("age", 20, 30); // 区间
-        Integer count = userMapper.selectCount(wrapper);// 查询结果数
+        Long count = userMapper.selectCount(wrapper);// 查询结果数
         System.out.println(count);
     }
 
