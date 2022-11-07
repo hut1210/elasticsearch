@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
  * @version 1.0
  * @date 2020/12/30 19:56
  */
-@Configuration
+/*@Configuration
 @Slf4j
 public class QuartzConfig implements SchedulerFactoryBeanCustomizer {
 
@@ -61,4 +61,4 @@ public class QuartzConfig implements SchedulerFactoryBeanCustomizer {
                 .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                 .build();
     }
-}
+}*/

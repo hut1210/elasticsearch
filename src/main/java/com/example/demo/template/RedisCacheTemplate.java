@@ -1,6 +1,7 @@
 package com.example.demo.template;
 
 import com.example.demo.bloomfilter.RedisBloomFilter;
+import com.example.demo.domain.Person;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.api.RLock;
@@ -40,7 +41,7 @@ public class RedisCacheTemplate<T> {
         if(useBloom) {
             boolean isExistBloom = redisBloomFilter.mightContain(key);
             if(!isExistBloom) {
-                return null;
+                return (T) new Person();
             }
         }
 

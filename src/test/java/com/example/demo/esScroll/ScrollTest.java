@@ -133,7 +133,7 @@ public class ScrollTest {
     @Test
     public void test4() throws IOException {
         EventRecordDto eventRecordDto = new EventRecordDto();
-        eventRecordDto.setPageIndex(200);
+        eventRecordDto.setPageIndex(109);
         eventRecordDto.setPageSize(100);
         Pageable pageable = PageRequest.of(eventRecordDto.getPageIndex(), eventRecordDto.getPageSize());
         //分页
@@ -156,7 +156,7 @@ public class ScrollTest {
                 int i = 0;
                 while (searchHits != null && searchHits.length > 0 && i < eventRecordDto.getPageIndex()) {
                     i++;
-                    SearchScrollRequest scrollRequest = new SearchScrollRequest();
+                    SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
                     scrollRequest.scroll(scroll);
                     searchResponse = restHighLevelClient.scroll(scrollRequest, RequestOptions.DEFAULT);
                     scrollId = searchResponse.getScrollId();

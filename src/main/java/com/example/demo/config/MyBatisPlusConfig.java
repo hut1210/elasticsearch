@@ -13,13 +13,17 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,9 +36,9 @@ import javax.sql.DataSource;
  * @version 1.0
  * @date 2021/4/19 13:29
  */
-/*@MapperScan("com.example.demo.mapper")
+@MapperScan("com.example.demo.mapper")
 @EnableTransactionManagement
-@Configuration*/
+@Configuration
 public class MyBatisPlusConfig {
 
     //3.0.5版本
@@ -55,6 +59,17 @@ public class MyBatisPlusConfig {
         return new LogicSqlInjector();
     }*/
 
+    @Autowired
+    private Environment env;
+
+    @Bean
+    public DataSource getDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(env.getProperty("spring.datasource.url"));
+        dataSource.setUsername(env.getProperty("spring.datasource.username"));
+        dataSource.setPassword(env.getProperty("spring.datasource.password"));
+        return dataSource;
+    }
 
     /**
      * 创建sqlSessionFactory

@@ -8,10 +8,7 @@ import com.example.demo.template.RedisCacheTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -32,11 +29,13 @@ public class PersonController {
     private RedisCacheTemplate<Person> redisCacheTemplate;
 
     @RequestMapping(value = "/getOne/{name}", method = RequestMethod.GET)
+    @ResponseBody
     public Person getOne(@PathVariable("name") String name) throws InterruptedException, JsonProcessingException {
         log.info("This is getOnePerson has been called......");
         return redisCacheTemplate.findCache("person:" + name, 30_000, new CacheLoadble<Person>() {
             @Override
             public Person load() {
+                log.info("查询数据库 name={}", name);
                 //查询数据库
                 LambdaQueryWrapper<Person> lambdaQueryWrapper = new LambdaQueryWrapper();
                 lambdaQueryWrapper.eq(Person::getName, name);
@@ -44,6 +43,13 @@ public class PersonController {
                 return person;
             }
         }, true);
+    }
+
+    @ResponseBody
+    @PostMapping("/save")
+    public String savePerson(@RequestBody Person person){
+        personMapper.insert(person);
+        return "Success";
     }
 
 
