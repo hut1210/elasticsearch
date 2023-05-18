@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import org.apache.commons.collections.MapUtils;
+
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 /**
@@ -10,9 +13,43 @@ public class Test {
 
     public static void main(String[] args) {
         //System.out.println(getN(7));
-        int oldArr[]={-4,-3,0,1,56,34,76,34,23,4,75,87,50,3,5,6,0};
+        //int oldArr[]={-4,-3,0,1,56,34,76,34,23,4,75,87,50,3,5,6,0};
         //int oldArr[] = {1, -1, 3, 2, 0};
-        System.out.println(getIndex(oldArr));
+        //System.out.println(getIndex(oldArr));
+        BigDecimal bigDecimal = new BigDecimal("1239.82");
+        System.out.println(bigDecimal);
+        System.out.println(autoGenericCode("10"));
+        System.out.println(autoGenericCode("10",2));
+        System.out.println(autoGenericCode("1",2));
+    }
+
+    /**
+     * 不够位数的在前面补0，保留code的长度位数字
+     * @param code
+     * @return
+     */
+    private static String autoGenericCode(String code) {
+        String result = "";
+        // 保留code的位数
+        result = String.format("%0" + code.length() + "d", Integer.parseInt(code) + 1);
+
+        return result;
+    }
+
+    /**
+     * 不够位数的在前面补0，保留num的长度位数字
+     * @param code
+     * @return
+     */
+    private static String autoGenericCode(String code, int num) {
+        String result = "";
+        // 保留num的位数
+        // 0 代表前面补充0
+        // num 代表长度为4
+        // d 代表参数为正数型
+        result = String.format("%0" + num + "d", Integer.parseInt(code) + 1);
+
+        return result;
     }
 
     // 数列前2项为 1 1，从第3项开始，若为奇数项，则值为前两项之和，若为偶数项，则值为前两项之和的2倍

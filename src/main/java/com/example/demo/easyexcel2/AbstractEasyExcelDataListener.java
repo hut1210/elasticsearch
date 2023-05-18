@@ -33,8 +33,8 @@ public abstract class AbstractEasyExcelDataListener extends AnalysisEventListene
             tempFile = File.createTempFile("tmp", ".xlsx");
             writeSheet = EasyExcel.writerSheet("模板").sheetNo(0).build();
             //写入临时文件
-            //excelWriter = EasyExcel.write(tempFile).head(head).build();
-            excelWriter = EasyExcel.write("/Users/huteng/Desktop/abc.xlsx").head(head).build();
+            excelWriter = EasyExcel.write(tempFile).head(head).build();
+            //excelWriter = EasyExcel.write("/Users/huteng/Desktop/abc.xlsx").head(head).build();
             excelDto.setHead(head);
         } catch (IOException e) {
             e.printStackTrace();

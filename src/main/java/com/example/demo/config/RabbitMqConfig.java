@@ -43,11 +43,11 @@ public class RabbitMqConfig {
          * @param cause：失败的原因
          */
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
-            System.out.println("发送消息触发confirmCallback回调" +
+            /*System.out.println("发送消息触发confirmCallback回调" +
                     "\ncorrelationData ===> " + correlationData +
                     "\nack ===> " + ack + "" +
                     "\ncause ===> " + cause);
-            System.out.println("=================================================");
+            System.out.println("=================================================");*/
         });
 
         rabbitTemplate.setMandatory(true);
@@ -61,12 +61,12 @@ public class RabbitMqConfig {
          * @param routingKey：接收消息的路由键
          */
         rabbitTemplate.setReturnsCallback((returnedMessage)->{
-            System.out.println("消息未到达队列触发returnCallback回调" +
+            /*System.out.println("消息未到达队列触发returnCallback回调" +
                     "\nmessage ===> " + returnedMessage.getMessage() +
                     "\nreplyCode ===> " + returnedMessage.getReplyCode() +
                     "\nreplyText ===> " + returnedMessage.getReplyText() +
                     "\nexchange ===> " + returnedMessage.getExchange() +
-                    "\nroutingKey ===> " + returnedMessage.getRoutingKey());
+                    "\nroutingKey ===> " + returnedMessage.getRoutingKey());*/
         });
     }
 
@@ -91,12 +91,12 @@ public class RabbitMqConfig {
     @Bean
     public Binding binding1(){
         //String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object
-        return new Binding("hello-java-queue1",Binding.DestinationType.QUEUE,"hello-java-topic-exchange","hello.java.*",null);
+        return new Binding("hello-java-queue1",Binding.DestinationType.QUEUE,"hello-java-topic-exchange","hello.java.test1",null);
     }
 
     @Bean
     public Binding binding2(){
         //String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object
-        return new Binding("hello-java-queue2",Binding.DestinationType.QUEUE,"hello-java-topic-exchange","hello.java.*",null);
+        return new Binding("hello-java-queue2",Binding.DestinationType.QUEUE,"hello-java-topic-exchange","hello.java.test0",null);
     }
 }

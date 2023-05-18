@@ -23,15 +23,15 @@ public class RabbitMqController {
     public String sendMessage(@PathVariable(name = "num") Integer num) {
         Random random = new Random();
         for (int i = 0; i < num; i++) {
-            if (i % 2 == 0) {
-                rabbitTemplate.convertAndSend("hello-java-topic-exchange", "hello.java.test", "hello world" + i);
-            } else {
+            //if (i % 2 == 0) {
+                rabbitTemplate.convertAndSend("hello-java-topic-exchange", "hello.java.test0", "hello world" + i);
+            /*} else {
                 Student student = new Student();
                 student.setName("测试" + i);
                 student.setAge(20 + random.nextInt(10));
                 student.setStudentId(UUID.randomUUID().toString());
-                rabbitTemplate.convertAndSend("hello-java-topic-exchange", "hello.java.test", student);
-            }
+                rabbitTemplate.convertAndSend("hello-java-topic-exchange", "hello.java.test1", student);
+            }*/
         }
 
         return "ok";

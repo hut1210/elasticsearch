@@ -11,6 +11,7 @@ import com.example.demo.util.DateUtils;
 import com.example.demo.util.HttpUtil;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.mapstruct.ap.shaded.freemarker.template.utility.DateUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,14 @@ public class TestController {
 
     @Resource
     private UserMapper userMapper;
+
+    @Value("${server.port}")
+    private String port;
+
+    @GetMapping("/port")
+    public String echo(){
+        return port;
+    }
 
     /**
      * 测试

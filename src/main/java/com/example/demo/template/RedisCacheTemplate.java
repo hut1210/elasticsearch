@@ -2,6 +2,7 @@ package com.example.demo.template;
 
 import com.example.demo.bloomfilter.RedisBloomFilter;
 import com.example.demo.domain.Person;
+import com.example.demo.dto.Result;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.api.RLock;
@@ -32,7 +33,7 @@ public class RedisCacheTemplate<T> {
     @Resource
     private RedissonClient redissonClient;
 
-    public T findCache(String key, long expire_ms, CacheLoadble<T> cacheLoadble, boolean useBloom ) throws JsonProcessingException {
+    public Result<T> findCache(String key, long expire_ms, CacheLoadble<T> cacheLoadble, boolean useBloom ) throws JsonProcessingException {
         // 这两句话是为了获得泛型T，在运行过程中的真实class类型。
         ParameterizedType parameterizedType = (ParameterizedType)cacheLoadble.getClass().getGenericSuperclass();
         Class<T> TClass =  (Class<T>) parameterizedType.getActualTypeArguments()[0];
@@ -41,7 +42,7 @@ public class RedisCacheTemplate<T> {
         if(useBloom) {
             boolean isExistBloom = redisBloomFilter.mightContain(key);
             if(!isExistBloom) {
-                return (T) new Person();
+                return Result.ok("查询不到数据");
             }
         }
 
@@ -49,7 +50,7 @@ public class RedisCacheTemplate<T> {
         String obj_json = stringRedisTemplate.opsForValue().get(key);
         if(null != obj_json) {
             // 缓存命中直接返回
-            return jacksonMapper.readValue(obj_json, TClass );
+            return Result.ok(jacksonMapper.readValue(obj_json, TClass ));
         }
 
         // 若未命中Redis缓存，则从数据库查询
@@ -61,16 +62,16 @@ public class RedisCacheTemplate<T> {
             obj_json = stringRedisTemplate.opsForValue().get(key);
             if(null != obj_json) {
                 // 缓存命中直接返回
-                return jacksonMapper.readValue(obj_json, TClass);
+                return Result.ok(jacksonMapper.readValue(obj_json, TClass));
             }
 
             // 调用实现接口的子类方法（具体加载什么内容由子类实现）
             T loadResult = cacheLoadble.load();
             // 将从数据库查询得到的结果放入Redis缓存
             if(null != loadResult) {
-                stringRedisTemplate.opsForValue().set(key, jacksonMapper.writeValueAsString(loadResult));
+                stringRedisTemplate.opsForValue().set(key, jacksonMapper.writeValueAsString(loadResult),expire_ms,TimeUnit.MILLISECONDS);
             }
-            return loadResult;
+            return Result.ok(loadResult);
         }finally {
             lock.unlock(); // 解锁
         }

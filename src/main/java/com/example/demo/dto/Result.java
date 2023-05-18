@@ -23,6 +23,12 @@ public class Result<T> {
         return ok(null);
     }
 
+    public static <T> Result<T> ok(String msg) {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMsg(msg);
+        return result;
+    }
     public static <T> Result<T> ok(T data) {
         Result<T> result = new Result<>();
         result.setData(data);

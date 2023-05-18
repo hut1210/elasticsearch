@@ -1,6 +1,7 @@
 package com.example.demo.bloomfilter;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Longs;
 import lombok.Data;
@@ -172,5 +173,33 @@ public class RedisBloomFilter {
             fpp = Double.MIN_VALUE;
         }
         return (long) (-expectedInsertions * Math.log(fpp) / (Math.log(2) * Math.log(2)));
+    }
+
+    /**
+     * 根据给定的布隆过滤器添加值
+     */
+    public <T> void addByBloomFilter(BloomFilterHelper<T> bloomFilterHelper, String key, T value) {
+        Preconditions.checkArgument(bloomFilterHelper != null, "bloomFilterHelper不能为空");
+        int[] offset = bloomFilterHelper.murmurHashOffset(value);
+        for (int i : offset) {
+            System.out.println("key : " + key + " " + "value : " + i);
+            redisTemplate.opsForValue().setBit(key, i, true);
+        }
+    }
+
+    /**
+     * 根据给定的布隆过滤器判断值是否存在
+     */
+    public <T> boolean includeByBloomFilter(BloomFilterHelper<T> bloomFilterHelper, String key, T value) {
+        Preconditions.checkArgument(bloomFilterHelper != null, "bloomFilterHelper不能为空");
+        int[] offset = bloomFilterHelper.murmurHashOffset(value);
+        for (int i : offset) {
+            System.out.println("key : " + key + " " + "value : " + i);
+            if (!redisTemplate.opsForValue().getBit(key, i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

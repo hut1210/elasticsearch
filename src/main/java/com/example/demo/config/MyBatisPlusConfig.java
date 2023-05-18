@@ -89,7 +89,7 @@ public class MyBatisPlusConfig {
         configuration.setJdbcTypeForNull(JdbcType.NULL);
         configuration.setMapUnderscoreToCamelCase(true);
         configuration.setCacheEnabled(false);
-        configuration.setLogImpl(StdOutImpl.class);
+        //configuration.setLogImpl(StdOutImpl.class);
         sqlSessionFactory.setConfiguration(configuration);
         //全局配置
         GlobalConfig globalConfig = new GlobalConfig();

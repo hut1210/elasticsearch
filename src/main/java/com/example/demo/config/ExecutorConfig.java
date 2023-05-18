@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @date 2020/12/30 19:57
  */
 @Configuration
+@EnableAsync
 @Slf4j
 public class ExecutorConfig {
 
